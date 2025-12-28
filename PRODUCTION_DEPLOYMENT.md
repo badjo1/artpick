@@ -96,11 +96,12 @@ BUNNY_REGION=de
 BUNNY_ENDPOINT=https://storage.bunnycdn.com
 
 # Email (voor uitnodigingen, optioneel)
-SMTP_ADDRESS=smtp.gmail.com
-SMTP_PORT=587
-SMTP_DOMAIN=jouwdomain.nl
-SMTP_USERNAME=noreply@jouwdomain.nl
-SMTP_PASSWORD=your_app_password
+# Voeg deze toe aan je environment variabelen:
+# SMTP_ADDRESS=je_smtp_server
+# SMTP_PORT=587
+# SMTP_DOMAIN=je_domain
+# SMTP_USERNAME=je_username
+# SMTP_PASSWORD=je_wachtwoord
 ```
 
 ### Secret Key Base Genereren
