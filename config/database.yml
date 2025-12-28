@@ -85,18 +85,20 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary:
+  primary: &primary_production
     <<: *default
-    url: <%= ENV["DATABASE_URL"] %>
+    database: fundtogether_production
+    username: fundtogether
+    password: <%= ENV["FUNDTOGETHER_DATABASE_PASSWORD"] %>
   cache:
-    <<: *default
-    url: <%= ENV["DATABASE_URL"] %>
+    <<: *primary_production
+    database: fundtogether_production_cache
     migrations_paths: db/cache_migrate
   queue:
-    <<: *default
-    url: <%= ENV["DATABASE_URL"] %>
+    <<: *primary_production
+    database: fundtogether_production_queue
     migrations_paths: db/queue_migrate
   cable:
-    <<: *default
-    url: <%= ENV["DATABASE_URL"] %>
+    <<: *primary_production
+    database: fundtogether_production_cable
     migrations_paths: db/cable_migrate
