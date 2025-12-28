@@ -1,0 +1,64 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h1>Uitnodigingslinks</h1>
+    <%= link_to "Terug naar Dashboard", admin_root_path, class: "btn btn-secondary" %>
+  </div>
+
+  <div class="admin-nav">
+    <%= link_to "Dashboard", admin_root_path, class: "nav-link" %>
+    <%= link_to "Afbeeldingen", admin_images_path, class: "nav-link" %>
+    <%= link_to "Uitnodigingslinks", admin_invite_links_path, class: "nav-link active" %>
+    <%= link_to "Instellingen", edit_admin_settings_path, class: "nav-link" %>
+  </div>
+
+  <div class="form-container">
+    <h2>Nieuwe uitnodigingslink aanmaken</h2>
+    <%= form_with model: @new_invite_link, url: admin_invite_links_path, local: true do |f| %>
+      <div class="form-group">
+        <%= f.label :name, "Naam (optioneel)" %>
+        <%= f.text_field :name, class: "form-input", placeholder: "Bijv. 'Social Media Campaign'" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :active, "Actief" %>
+        <%= f.check_box :active, class: "form-checkbox" %>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Link aanmaken", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="dashboard-section">
+    <h2>Bestaande uitnodigingslinks</h2>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Naam</th>
+          <th>URL</th>
+          <th>Stemmen</th>
+          <th>Status</th>
+          <th>Aangemaakt</th>
+          <th>Acties</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @invite_links.each do |link| %>
+          <tr>
+            <td><%= link.name || "Geen naam" %></td>
+            <td class="url-cell">
+              <input type="text" value="<%= invite_url(token: link.token) %>" readonly onclick="this.select()">
+            </td>
+            <td><%= link.vote_count %></td>
+            <td><%= link.active? ? "Actief" : "Inactief" %></td>
+            <td><%= link.created_at.strftime("%d-%m-%Y") %></td>
+            <td>
+              <%= button_to "Verwijder", admin_invite_link_path(link), method: :delete, data: { confirm: "Weet je het zeker?" }, class: "btn btn-small btn-danger" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

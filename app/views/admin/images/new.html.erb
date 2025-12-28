@@ -1,0 +1,37 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h1>Nieuwe Afbeelding Toevoegen</h1>
+    <%= link_to "Terug", admin_images_path, class: "btn btn-secondary" %>
+  </div>
+
+  <div class="form-container">
+    <%= form_with model: @image, url: admin_images_path, local: true do |f| %>
+      <% if @image.errors.any? %>
+        <div class="error-messages">
+          <h3><%= pluralize(@image.errors.count, "fout", "fouten") %> voorkomen dat deze afbeelding wordt opgeslagen:</h3>
+          <ul>
+            <% @image.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= f.label :title, "Titel" %>
+        <%= f.text_field :title, class: "form-input", required: true %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :file, "Afbeelding (9:16 verticaal)" %>
+        <%= f.file_field :file, accept: "image/*", class: "form-input", required: true %>
+        <p class="form-help">Upload een verticale afbeelding in 9:16 formaat</p>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Afbeelding toevoegen", class: "btn btn-primary" %>
+        <%= link_to "Annuleren", admin_images_path, class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

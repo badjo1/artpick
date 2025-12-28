@@ -1,0 +1,35 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>Wachtwoord Vergeten?</h1>
+      <p>Ontvang reset instructies via e-mail</p>
+    </div>
+
+    <% if flash[:alert] %>
+      <div class="alert alert-error">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <%= form_with url: passwords_path, class: "auth-form" do |form| %>
+      <div class="form-group">
+        <%= form.label :email_address, "E-mailadres" %>
+        <%= form.email_field :email_address,
+            required: true,
+            autofocus: true,
+            autocomplete: "username",
+            placeholder: "Voer je e-mailadres in",
+            value: params[:email_address],
+            class: "form-input" %>
+      </div>
+
+      <div class="form-actions">
+        <%= form.submit "Reset instructies versturen", class: "btn btn-primary btn-block" %>
+      </div>
+    <% end %>
+
+    <div class="auth-footer">
+      <%= link_to "Terug naar login", new_session_path, class: "auth-link" %>
+    </div>
+  </div>
+</div>

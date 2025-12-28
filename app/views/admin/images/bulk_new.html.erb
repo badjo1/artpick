@@ -1,0 +1,134 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h1>Bulk Upload Afbeeldingen</h1>
+    <%= link_to "Terug", admin_images_path, class: "btn btn-secondary" %>
+  </div>
+
+  <div class="bulk-upload-container">
+    <h3>Upload meerdere afbeeldingen tegelijk</h3>
+    <p class="form-help">Sleep afbeeldingen naar het gebied hieronder of klik om te selecteren. Je kunt meerdere afbeeldingen tegelijk selecteren.</p>
+
+    <%= form_with url: bulk_create_admin_images_path, multipart: true, id: "bulk-upload-form" do |f| %>
+      <div class="file-drop-zone" id="dropZone">
+        <p style="margin: 0; font-size: 1.125rem; font-weight: 500;">
+          📸 Sleep afbeeldingen hierheen
+        </p>
+        <p style="margin: 0.5rem 0 0; color: var(--secondary-color); font-size: 0.875rem;">
+          of klik om te selecteren
+        </p>
+        <%= f.file_field :files,
+            multiple: true,
+            accept: "image/*",
+            style: "display: none;",
+            id: "fileInput",
+            onchange: "handleFiles(this.files)" %>
+      </div>
+
+      <div id="filePreviewContainer" style="display: none;">
+        <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Geselecteerde afbeeldingen (<span id="fileCount">0</span>)</h4>
+        <div class="file-preview-grid" id="filePreviewGrid"></div>
+      </div>
+
+      <div id="uploadProgress" class="upload-progress" style="display: none;">
+        <p id="uploadStatus">Uploaden...</p>
+        <div class="progress-bar">
+          <div class="progress-bar-fill" id="progressBarFill" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="form-actions" id="uploadActions" style="display: none; margin-top: 2rem;">
+        <%= f.submit "Upload alle afbeeldingen", class: "btn btn-primary", id: "submitBtn" %>
+        <button type="button" class="btn btn-secondary" onclick="clearFiles()">Wissen</button>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+let selectedFiles = [];
+
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const filePreviewContainer = document.getElementById('filePreviewContainer');
+const filePreviewGrid = document.getElementById('filePreviewGrid');
+const uploadActions = document.getElementById('uploadActions');
+const fileCount = document.getElementById('fileCount');
+
+// Click to select files
+dropZone.addEventListener('click', () => {
+  fileInput.click();
+});
+
+// Drag and drop handlers
+dropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropZone.classList.add('dragging');
+});
+
+dropZone.addEventListener('dragleave', () => {
+  dropZone.classList.remove('dragging');
+});
+
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('dragging');
+  handleFiles(e.dataTransfer.files);
+});
+
+function handleFiles(files) {
+  selectedFiles = Array.from(files);
+  updatePreview();
+}
+
+function updatePreview() {
+  filePreviewGrid.innerHTML = '';
+
+  if (selectedFiles.length === 0) {
+    filePreviewContainer.style.display = 'none';
+    uploadActions.style.display = 'none';
+    return;
+  }
+
+  filePreviewContainer.style.display = 'block';
+  uploadActions.style.display = 'flex';
+  fileCount.textContent = selectedFiles.length;
+
+  selectedFiles.forEach((file, index) => {
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const div = document.createElement('div');
+      div.className = 'file-preview-item';
+      div.innerHTML = `
+        <img src="${e.target.result}" alt="${file.name}">
+        <button type="button" class="file-preview-remove" onclick="removeFile(${index})" title="Verwijder">×</button>
+      `;
+      filePreviewGrid.appendChild(div);
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+  // Update the file input with selected files
+  const dataTransfer = new DataTransfer();
+  selectedFiles.forEach(file => dataTransfer.items.add(file));
+  fileInput.files = dataTransfer.files;
+}
+
+function removeFile(index) {
+  selectedFiles.splice(index, 1);
+  updatePreview();
+}
+
+function clearFiles() {
+  selectedFiles = [];
+  updatePreview();
+}
+
+// Optional: Show upload progress
+document.getElementById('bulk-upload-form').addEventListener('submit', function() {
+  document.getElementById('uploadProgress').style.display = 'block';
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('uploadStatus').textContent = `Uploaden van ${selectedFiles.length} afbeeldingen...`;
+});
+</script>

@@ -1,0 +1,42 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h1>Afbeelding Bewerken</h1>
+    <%= link_to "Terug", admin_images_path, class: "btn btn-secondary" %>
+  </div>
+
+  <div class="form-container">
+    <%= form_with model: @image, url: admin_image_path(@image), method: :patch, local: true do |f| %>
+      <% if @image.errors.any? %>
+        <div class="error-messages">
+          <h3><%= pluralize(@image.errors.count, "fout", "fouten") %> voorkomen dat deze afbeelding wordt opgeslagen:</h3>
+          <ul>
+            <% @image.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= f.label :title, "Titel" %>
+        <%= f.text_field :title, class: "form-input", required: true %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :file, "Nieuwe afbeelding (laat leeg om huidige te behouden)" %>
+        <%= f.file_field :file, accept: "image/*", class: "form-input" %>
+        <% if @image.file.attached? %>
+          <div class="current-image">
+            <p>Huidige afbeelding:</p>
+            <%= image_tag @image.file, style: "max-width: 200px;" %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Afbeelding bijwerken", class: "btn btn-primary" %>
+        <%= link_to "Annuleren", admin_images_path, class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

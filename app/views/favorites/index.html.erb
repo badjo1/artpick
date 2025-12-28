@@ -1,0 +1,111 @@
+<div class="favorites-container">
+  <div class="favorites-header">
+    <h1>Kies je Top 5 Favorieten</h1>
+    <p class="instruction">Selecteer exact 5 afbeeldingen die jij het beste vindt</p>
+
+    <div class="selection-counter">
+      <span class="counter-display">
+        <span id="selected-count">0</span> / 5 geselecteerd
+      </span>
+    </div>
+  </div>
+
+  <%= form_with url: favorites_path, method: :post, id: "favorites-form" do |f| %>
+    <div class="favorites-grid">
+      <% @images.each do |image| %>
+        <div class="favorite-item" data-image-id="<%= image.id %>">
+          <input type="checkbox"
+                 name="image_ids[]"
+                 value="<%= image.id %>"
+                 id="image_<%= image.id %>"
+                 <%= 'checked' if @selected_image_ids.include?(image.id) %>
+                 class="favorite-checkbox">
+          <label for="image_<%= image.id %>" class="favorite-label">
+            <div class="favorite-image-wrapper">
+              <% if image.file.attached? %>
+                <%= image_tag image.file, alt: image.title, class: "favorite-image" %>
+              <% else %>
+                <div class="image-placeholder">
+                  <%= image.title %>
+                </div>
+              <% end %>
+              <div class="selection-badge">✓</div>
+            </div>
+            <div class="image-info">
+              <h3><%= image.title %></h3>
+              <span class="image-rank">#<%= image.position %></span>
+            </div>
+          </label>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="favorites-actions">
+      <%= button_tag "Bewaar Top 5", type: "submit", class: "btn btn-primary", id: "submit-btn" %>
+      <%= link_to "Terug naar stemmen", vote_path, class: "btn btn-secondary" %>
+    </div>
+  <% end %>
+</div>
+
+<script>
+function initFavoritesForm() {
+  const form = document.getElementById('favorites-form');
+  if (!form) return;
+
+  const checkboxes = form.querySelectorAll('.favorite-checkbox');
+  const selectedCount = document.getElementById('selected-count');
+  const submitBtn = document.getElementById('submit-btn');
+  const MAX_SELECTIONS = 5;
+
+  function updateUI() {
+    const checked = Array.from(checkboxes).filter(cb => cb.checked);
+    selectedCount.textContent = checked.length;
+
+    // Enable submit button only if exactly 5 are selected
+    submitBtn.disabled = checked.length !== MAX_SELECTIONS;
+
+    // Disable unchecked checkboxes if max is reached
+    checkboxes.forEach(cb => {
+      if (!cb.checked && checked.length >= MAX_SELECTIONS) {
+        cb.disabled = true;
+        cb.closest('.favorite-item').classList.add('disabled');
+      } else {
+        cb.disabled = false;
+        cb.closest('.favorite-item').classList.remove('disabled');
+      }
+    });
+
+    // Update visual state
+    checkboxes.forEach(cb => {
+      if (cb.checked) {
+        cb.closest('.favorite-item').classList.add('selected');
+      } else {
+        cb.closest('.favorite-item').classList.remove('selected');
+      }
+    });
+  }
+
+  // Add event listeners
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', updateUI);
+  });
+
+  // Prevent form submission if not 5 selected
+  form.addEventListener('submit', function(e) {
+    const checked = Array.from(checkboxes).filter(cb => cb.checked);
+    if (checked.length !== MAX_SELECTIONS) {
+      e.preventDefault();
+      alert(`Selecteer exact ${MAX_SELECTIONS} afbeeldingen (je hebt ${checked.length} geselecteerd)`);
+      return false;
+    }
+  });
+
+  // Initialize on page load
+  updateUI();
+}
+
+// Support both Turbo and regular page loads
+document.addEventListener('DOMContentLoaded', initFavoritesForm);
+document.addEventListener('turbo:load', initFavoritesForm);
+document.addEventListener('turbo:render', initFavoritesForm);
+</script>

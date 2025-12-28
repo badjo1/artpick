@@ -1,0 +1,119 @@
+<div class="results-container">
+  <div class="results-header">
+    <h1>Resultaten</h1>
+    <p class="intro-text"><%= @intro_text %></p>
+
+    <% unless @has_selected_favorites %>
+      <div class="favorites-prompt">
+        <p>
+          <strong>Nog niet je top 5 gekozen?</strong>
+          <%= link_to "Kies nu je favorieten →", favorites_path, class: "favorites-prompt-link" %>
+        </p>
+      </div>
+    <% end %>
+
+    <% if @voting_open %>
+      <p class="voting-status open">
+        Stemmen is nog open! <%= link_to "Stem nu", vote_path, class: "vote-link" %>
+      </p>
+    <% else %>
+      <p class="voting-status closed">
+        Stemmen is gesloten
+      </p>
+    <% end %>
+  </div>
+
+  <div class="top-10">
+    <h2>Top 10</h2>
+    <div class="ranking-grid">
+      <% @top_10.each_with_index do |image, index| %>
+        <div class="ranking-item">
+          <div class="rank-number"><%= index + 1 %></div>
+          <div class="image-container">
+            <% if image.file.attached? %>
+              <%= image_tag image.file, alt: image.title, class: "result-image" %>
+            <% else %>
+              <div class="image-placeholder"><%= image.title %></div>
+            <% end %>
+          </div>
+          <div class="image-info">
+            <h3><%= image.title %></h3>
+            <p class="elo-score">Elo Score: <%= image.elo_score.round %></p>
+            <p class="vote-count">Stemmen: <%= image.vote_count %></p>
+            <p class="win-rate">Win rate: <%= image.win_rate %>%</p>
+            <p class="favorite-count">⭐ Top 5: <%= image.favorite_count %>x</p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="top-favorites">
+    <h2>Top Favorieten (Meest gekozen in Top 5)</h2>
+    <div class="favorites-ranking">
+      <% @images.ranked_by_favorites.limit(10).each_with_index do |image, index| %>
+        <div class="favorites-item">
+          <div class="fav-rank-number"><%= index + 1 %></div>
+          <div class="fav-image-container">
+            <% if image.file.attached? %>
+              <%= image_tag image.file, alt: image.title, class: "fav-result-image" %>
+            <% end %>
+          </div>
+          <div class="fav-info">
+            <h3><%= image.title %></h3>
+            <p class="fav-count">⭐ <%= image.favorite_count %>x in top 5 gekozen</p>
+            <p class="elo-ref">Elo ranking: #<%= image.position %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <details class="full-ranking">
+    <summary>Volledige ranking</summary>
+    <div class="ranking-list">
+      <% @images.each_with_index do |image, index| %>
+        <div class="ranking-row">
+          <span class="position"><%= index + 1 %></span>
+          <div class="image-thumb">
+            <% if image.file.attached? %>
+              <%= image_tag image.file, alt: image.title %>
+            <% end %>
+          </div>
+          <span class="title"><%= image.title %></span>
+          <span class="score"><%= image.elo_score.round %></span>
+          <span class="votes"><%= image.vote_count %> stemmen</span>
+          <span class="favorites">⭐ <%= image.favorite_count %></span>
+        </div>
+      <% end %>
+    </div>
+  </details>
+
+  <div class="share-section">
+    <h2>Deel met anderen</h2>
+
+    <div class="social-share">
+      <a href="https://twitter.com/intent/tweet?text=Bekijk%20de%20kunstranking!&url=<%= request.original_url %>"
+         target="_blank"
+         class="share-button twitter">
+        Deel op Twitter / X
+      </a>
+
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=<%= request.original_url %>"
+         target="_blank"
+         class="share-button linkedin">
+        Deel op LinkedIn
+      </a>
+    </div>
+
+    <div class="email-invite">
+      <h3>Nodig iemand uit via e-mail</h3>
+      <%= form_with url: share_email_path, method: :post do |f| %>
+        <div class="form-group">
+          <%= text_field_tag :email, nil, placeholder: "E-mailadres", class: "form-input", type: "email", required: true %>
+          <%= submit_tag "Verstuur uitnodiging", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

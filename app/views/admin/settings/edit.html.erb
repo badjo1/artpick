@@ -1,0 +1,33 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h1>Instellingen</h1>
+    <%= link_to "Terug naar Dashboard", admin_root_path, class: "btn btn-secondary" %>
+  </div>
+
+  <div class="admin-nav">
+    <%= link_to "Dashboard", admin_root_path, class: "nav-link" %>
+    <%= link_to "Afbeeldingen", admin_images_path, class: "nav-link" %>
+    <%= link_to "Uitnodigingslinks", admin_invite_links_path, class: "nav-link" %>
+    <%= link_to "Instellingen", edit_admin_settings_path, class: "nav-link active" %>
+  </div>
+
+  <div class="form-container">
+    <%= form_with url: admin_settings_path, method: :patch, local: true do |f| %>
+      <div class="form-group">
+        <%= label_tag :voting_deadline, "Stemdeadline" %>
+        <%= datetime_field_tag :voting_deadline, @voting_deadline, class: "form-input" %>
+        <p class="form-help">Na deze datum kunnen gebruikers niet meer stemmen</p>
+      </div>
+
+      <div class="form-group">
+        <%= label_tag :results_intro, "Introductietekst voor resultatenpagina" %>
+        <%= text_area_tag :results_intro, @results_intro, class: "form-input", rows: 5 %>
+        <p class="form-help">Deze tekst wordt bovenaan de resultatenpagina getoond</p>
+      </div>
+
+      <div class="form-actions">
+        <%= submit_tag "Instellingen opslaan", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,75 @@
+<div class="voting-container">
+  <% if @all_pairs_seen %>
+    <div class="completion-message">
+      <h1>Bedankt voor je deelname!</h1>
+      <p>Je hebt alle mogelijke combinaties gezien.</p>
+      <p>
+        <%= link_to "Kies je top 5", favorites_path, class: "btn btn-primary", style: "margin-right: 0.5rem;" %>
+        <%= link_to "Bekijk de resultaten", results_path, class: "btn btn-primary" %>
+      </p>
+    </div>
+  <% elsif @pair.nil? %>
+    <div class="no-images">
+      <h1>Nog geen afbeeldingen beschikbaar</h1>
+      <p>Kom later terug wanneer de stemming is begonnen.</p>
+    </div>
+  <% else %>
+    <div class="voting-header">
+      <h1>Welke afbeelding spreekt jou meer aan?</h1>
+      <p class="instruction">Klik op de afbeelding die je prefereert</p>
+
+      <% if @minimum_reached %>
+        <div class="progress-status completed">
+          ✓ Minimum bereikt! Je hebt <%= @votes_count %> paren vergeleken.
+          <%= link_to "Kies je top 5 →", favorites_path, class: "results-link", style: "margin-right: 1rem;" %>
+          <%= link_to "Bekijk resultaten", results_path, class: "results-link" %>
+        </div>
+      <% else %>
+        <div class="progress-status">
+          <div class="progress-info">
+            <span><%= @votes_count %> / <%= @minimum_votes %> paren vergeleken</span>
+            <span class="remaining">Nog <%= @votes_remaining %> te gaan</span>
+          </div>
+          <div class="progress-bar-voting">
+            <div class="progress-bar-fill-voting" style="width: <%= (@votes_count.to_f / @minimum_votes * 100).round %>%"></div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="voting-pair">
+      <div class="image-choice-container">
+        <%= form_with url: vote_path, method: :post, class: "vote-form" do |f| %>
+          <button type="submit" name="winner_id" value="<%= @pair[0].id %>" class="image-choice">
+            <%= hidden_field_tag :loser_id, @pair[1].id %>
+            <div class="image-wrapper">
+              <% if @pair[0].file.attached? %>
+                <%= image_tag @pair[0].file, alt: @pair[0].title, class: "voting-image" %>
+              <% else %>
+                <div class="image-placeholder">
+                  <%= @pair[0].title %>
+                </div>
+              <% end %>
+            </div>
+          </button>
+        <% end %>
+
+        <%= form_with url: vote_path, method: :post, class: "vote-form" do |f| %>
+          <button type="submit" name="winner_id" value="<%= @pair[1].id %>" class="image-choice">
+            <%= hidden_field_tag :loser_id, @pair[0].id %>
+            <div class="image-wrapper">
+              <% if @pair[1].file.attached? %>
+                <%= image_tag @pair[1].file, alt: @pair[1].title, class: "voting-image" %>
+              <% else %>
+                <div class="image-placeholder">
+                  <%= @pair[1].title %>
+                </div>
+              <% end %>
+            </div>
+          </button>
+        <% end %>
+      </div>
+    </div>
+
+  <% end %>
+</div>

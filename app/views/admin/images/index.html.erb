@@ -1,0 +1,42 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h1>Afbeeldingen Beheren</h1>
+    <%= link_to "Terug naar Dashboard", admin_root_path, class: "btn btn-secondary" %>
+  </div>
+
+  <div class="admin-nav">
+    <%= link_to "Dashboard", admin_root_path, class: "nav-link" %>
+    <%= link_to "Afbeeldingen", admin_images_path, class: "nav-link active" %>
+    <%= link_to "Uitnodigingslinks", admin_invite_links_path, class: "nav-link" %>
+    <%= link_to "Instellingen", edit_admin_settings_path, class: "nav-link" %>
+  </div>
+
+  <div class="admin-actions">
+    <%= link_to "Nieuwe afbeelding toevoegen", new_admin_image_path, class: "btn btn-primary" %>
+    <%= link_to "Bulk Upload (meerdere tegelijk)", bulk_new_admin_images_path, class: "btn btn-secondary" %>
+  </div>
+
+  <div class="images-grid">
+    <% @images.each do |image| %>
+      <div class="admin-image-card">
+        <div class="image-preview">
+          <% if image.file.attached? %>
+            <%= image_tag image.file, alt: image.title %>
+          <% else %>
+            <div class="placeholder">Geen afbeelding</div>
+          <% end %>
+        </div>
+        <div class="image-details">
+          <h3><%= image.title %></h3>
+          <p>Positie: #<%= image.position || "N/A" %></p>
+          <p>Elo: <%= image.elo_score.round %></p>
+          <p>Stemmen: <%= image.vote_count %></p>
+        </div>
+        <div class="image-actions">
+          <%= link_to "Bewerken", edit_admin_image_path(image), class: "btn btn-small" %>
+          <%= button_to "Verwijderen", admin_image_path(image), method: :delete, data: { confirm: "Weet je het zeker?" }, class: "btn btn-small btn-danger" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

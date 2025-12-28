@@ -1,0 +1,40 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>Nieuw Wachtwoord</h1>
+      <p>Kies een nieuw wachtwoord voor je account</p>
+    </div>
+
+    <% if flash[:alert] %>
+      <div class="alert alert-error">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <%= form_with url: password_path(params[:token]), method: :put, class: "auth-form" do |form| %>
+      <div class="form-group">
+        <%= form.label :password, "Nieuw wachtwoord" %>
+        <%= form.password_field :password,
+            required: true,
+            autocomplete: "new-password",
+            placeholder: "Minimaal 8 tekens",
+            maxlength: 72,
+            class: "form-input" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :password_confirmation, "Bevestig wachtwoord" %>
+        <%= form.password_field :password_confirmation,
+            required: true,
+            autocomplete: "new-password",
+            placeholder: "Herhaal je nieuwe wachtwoord",
+            maxlength: 72,
+            class: "form-input" %>
+      </div>
+
+      <div class="form-actions">
+        <%= form.submit "Wachtwoord opslaan", class: "btn btn-primary btn-block" %>
+      </div>
+    <% end %>
+  </div>
+</div>
