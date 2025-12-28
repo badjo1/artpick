@@ -87,18 +87,18 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: fundtogether_production
-    username: fundtogether
-    password: <%= ENV["FUNDTOGETHER_DATABASE_PASSWORD"] %>
+    database: artpick_production
+    username: artpick
+    password: <%= ENV["ARTPICK_DATABASE_PASSWORD"] %>
   cache:
     <<: *primary_production
-    database: fundtogether_production_cache
+    database: artpick_production_cache
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: fundtogether_production_queue
+    database: artpick_production_queue
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
-    database: fundtogether_production_cable
+    database: artpick_production_cable
     migrations_paths: db/cable_migrate
