@@ -16,6 +16,7 @@ bunny:
   api_key: <%= ENV['BUNNY_SECRET_KEY'] %>
   storage_zone: <%= ENV['BUNNY_STORAGE_ZONE'] %>
   region: <%= ENV['BUNNY_REGION'].presence %>
+  
 
 # Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
 # amazon:
