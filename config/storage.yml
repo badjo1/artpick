@@ -6,16 +6,16 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
-# Bunny.net CDN storage (S3-compatible)
+# Bunny.net CDN storage (native Bunny gem)
+# access_key: Password (write access for uploads)
+# api_key: ReadOnly Password (cache purging)
+# region: nil/empty for Falkenstein (de), 'ny' for New York, etc.
 bunny:
-  service: S3
-  access_key_id: <%= ENV['BUNNY_ACCESS_KEY'] %>
-  secret_access_key: <%= ENV['BUNNY_SECRET_KEY'] %>
-  region: us-east-1
-  bucket: <%= ENV['BUNNY_STORAGE_ZONE'] %>
-  endpoint: https://storage.bunnycdn.com
-  force_path_style: true
-  public: true
+  service: Bunny
+  access_key: <%= ENV['BUNNY_ACCESS_KEY'] %>
+  api_key: <%= ENV['BUNNY_SECRET_KEY'] %>
+  storage_zone: <%= ENV['BUNNY_STORAGE_ZONE'] %>
+  region: <%= ENV['BUNNY_REGION'].presence %>
 
 # Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
 # amazon:

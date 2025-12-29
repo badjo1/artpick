@@ -6,11 +6,10 @@
 Voeg deze environment variabelen toe aan je productie server:
 
 ```bash
-BUNNY_ACCESS_KEY=your_bunny_access_key
-BUNNY_SECRET_KEY=your_bunny_secret_key
-BUNNY_BUCKET_NAME=your_bucket_name
-BUNNY_REGION=de  # Of jouw regio (bijv. de, uk, ny)
-BUNNY_ENDPOINT=https://storage.bunnycdn.com  # Of jouw specifieke endpoint
+BUNNY_ACCESS_KEY=your_password  # Password (write access!)
+BUNNY_SECRET_KEY=your_readonly_password  # ReadOnly Password
+BUNNY_STORAGE_ZONE=crypto-art
+BUNNY_REGION=  # Laat leeg voor Falkenstein (de), of 'ny', 'uk', etc.
 ```
 
 ### Bunny.net Storage Zone Aanmaken
@@ -20,20 +19,22 @@ BUNNY_ENDPOINT=https://storage.bunnycdn.com  # Of jouw specifieke endpoint
 2. **Maak Storage Zone aan**:
    - Ga naar "Storage" → "Storage Zones"
    - Klik "Add Storage Zone"
-   - Kies een naam (bijv. "artpick-images")
+   - Kies een naam (bijv. "crypto-art")
    - Selecteer regio: **Falkenstein (de)** (of jouw voorkeur)
    - Klik "Add Storage Zone"
 
 3. **Noteer credentials**:
-   - **Storage Zone Name**: Dit is je `BUNNY_STORAGE_ZONE` (bijv. "artpick-images")
-   - **Password**: Dit is je `BUNNY_SECRET_KEY` (zie onder FTP & API Access)
-   - **ReadOnlyPassword**: Dit is je `BUNNY_ACCESS_KEY` (gebruik de ReadOnly password)
-   - **Region**: `de` voor Falkenstein (of `uk`, `ny`, etc.)
+   - **Storage Zone Name**: Dit is je `BUNNY_STORAGE_ZONE` (bijv. "crypto-art")
+   - **Password**: Dit is je `BUNNY_ACCESS_KEY` (write access voor uploads!)
+   - **ReadOnlyPassword**: Dit is je `BUNNY_SECRET_KEY` (voor cache purging)
+   - **Region**: Laat leeg voor Falkenstein (de), of gebruik `ny`, `uk`, etc.
 
 4. **Belangrijk**:
-   - ✅ Gebruik de **ReadOnly Password** als `BUNNY_ACCESS_KEY`
-   - ✅ Gebruik de **Password** als `BUNNY_SECRET_KEY`
+   - ✅ Gebruik de **Password** als `BUNNY_ACCESS_KEY` (niet ReadOnly!)
+   - ✅ Gebruik de **ReadOnly Password** als `BUNNY_SECRET_KEY`
+   - ✅ Region: laat `BUNNY_REGION` leeg of verwijder deze voor Falkenstein (de)
    - ✅ Storage Zone moet **public** zijn (niet private)
+   - ✅ We gebruiken de **active_storage_bunny gem** (niet S3-compatible API)
 
 ### Pull Zone Instellen (optioneel maar aanbevolen)
 Voor snellere laadtijden:
@@ -132,10 +133,10 @@ RAILS_ENV=production
 SECRET_KEY_BASE=<genereer met: bin/rails secret>
 
 # Bunny.net CDN (zie sectie 1 voor credentials)
-BUNNY_STORAGE_ZONE=your_storage_zone_name
-BUNNY_ACCESS_KEY=your_access_key
-BUNNY_SECRET_KEY=your_password_from_bunny
-BUNNY_REGION=de
+BUNNY_STORAGE_ZONE=crypto-art
+BUNNY_ACCESS_KEY=your_password  # Password (write access!)
+BUNNY_SECRET_KEY=your_readonly_password  # ReadOnly Password
+BUNNY_REGION=  # Laat leeg voor Falkenstein (de)
 
 # Email (voor uitnodigingen, optioneel)
 # Voeg deze toe aan je environment variabelen:
