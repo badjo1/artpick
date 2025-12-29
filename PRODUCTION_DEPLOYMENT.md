@@ -14,12 +14,26 @@ BUNNY_ENDPOINT=https://storage.bunnycdn.com  # Of jouw specifieke endpoint
 ```
 
 ### Bunny.net Storage Zone Aanmaken
-1. Log in op Bunny.net dashboard
-2. Ga naar "Storage" → "Storage Zones"
-3. Maak een nieuwe Storage Zone aan
-4. Noteer de **Access Key** en **Password** (Secret Key)
-5. Noteer de **Storage Zone name** (dit is je bucket name)
-6. Noteer het **endpoint** (bijvoorbeeld: https://storage.bunnycdn.com)
+
+1. **Log in** op [Bunny.net dashboard](https://dash.bunny.net)
+
+2. **Maak Storage Zone aan**:
+   - Ga naar "Storage" → "Storage Zones"
+   - Klik "Add Storage Zone"
+   - Kies een naam (bijv. "artpick-images")
+   - Selecteer regio: **Falkenstein (de)** (of jouw voorkeur)
+   - Klik "Add Storage Zone"
+
+3. **Noteer credentials**:
+   - **Storage Zone Name**: Dit is je `BUNNY_STORAGE_ZONE` (bijv. "artpick-images")
+   - **Password**: Dit is je `BUNNY_SECRET_KEY` (zie onder FTP & API Access)
+   - **ReadOnlyPassword**: Dit is je `BUNNY_ACCESS_KEY` (gebruik de ReadOnly password)
+   - **Region**: `de` voor Falkenstein (of `uk`, `ny`, etc.)
+
+4. **Belangrijk**:
+   - ✅ Gebruik de **ReadOnly Password** als `BUNNY_ACCESS_KEY`
+   - ✅ Gebruik de **Password** als `BUNNY_SECRET_KEY`
+   - ✅ Storage Zone moet **public** zijn (niet private)
 
 ### Pull Zone Instellen (optioneel maar aanbevolen)
 Voor snellere laadtijden:
@@ -117,12 +131,11 @@ CABLE_DATABASE_URL=postgresql://user:pass@host:5432/artpick_cable
 RAILS_ENV=production
 SECRET_KEY_BASE=<genereer met: bin/rails secret>
 
-# Bunny.net CDN
-BUNNY_ACCESS_KEY=your_key
-BUNNY_SECRET_KEY=your_secret
-BUNNY_BUCKET_NAME=your_bucket
+# Bunny.net CDN (zie sectie 1 voor credentials)
+BUNNY_STORAGE_ZONE=your_storage_zone_name
+BUNNY_ACCESS_KEY=your_access_key
+BUNNY_SECRET_KEY=your_password_from_bunny
 BUNNY_REGION=de
-BUNNY_ENDPOINT=https://storage.bunnycdn.com
 
 # Email (voor uitnodigingen, optioneel)
 # Voeg deze toe aan je environment variabelen:

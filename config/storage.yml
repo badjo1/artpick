@@ -12,9 +12,10 @@ bunny:
   access_key_id: <%= ENV['BUNNY_ACCESS_KEY'] %>
   secret_access_key: <%= ENV['BUNNY_SECRET_KEY'] %>
   region: <%= ENV['BUNNY_REGION'] || 'de' %>
-  bucket: <%= ENV['BUNNY_BUCKET_NAME'] %>
-  endpoint: <%= ENV['BUNNY_ENDPOINT'] %>
+  bucket: <%= ENV['BUNNY_STORAGE_ZONE'] %>
+  endpoint: <%= "https://#{ENV['BUNNY_REGION'] || 'de'}.storage.bunnycdn.com" %>
   force_path_style: true
+  public: true
 
 # Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
 # amazon:
