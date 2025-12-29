@@ -28,15 +28,39 @@ Voor snellere laadtijden:
 
 ## 2. Database Setup (PostgreSQL)
 
-### Productie Database Environment Variabelen
+### 4 Aparte Databases Aanmaken
+
+De applicatie gebruikt **4 aparte databases**:
+1. **artpick_production** - Hoofddatabase (users, images, votes, etc.)
+2. **artpick_cache** - Solid Cache tabellen
+3. **artpick_queue** - Solid Queue tabellen (background jobs)
+4. **artpick_cable** - Solid Cable tabellen (websockets)
+
+### Database URLs Instellen
+Stel deze environment variabelen in op je platform (Heroku, Hatchbox, etc.):
+
 ```bash
-DATABASE_URL=postgresql://username:password@host:5432/artpick_production
+DATABASE_URL=postgresql://user:pass@host:5432/artpick_production
+CACHE_DATABASE_URL=postgresql://user:pass@host:5432/artpick_cache
+QUEUE_DATABASE_URL=postgresql://user:pass@host:5432/artpick_queue
+CABLE_DATABASE_URL=postgresql://user:pass@host:5432/artpick_cable
 ```
+
+**Op Hatchbox/Heroku**: Deze databases worden vaak automatisch aangemaakt als je ze toevoegt aan je app configuratie.
 
 ### Database Aanmaken & Migreren
 ```bash
+# Maak alle databases aan
 RAILS_ENV=production bin/rails db:create
-RAILS_ENV=production bin/rails db:migrate
+
+# Of handmatig via psql:
+createdb artpick_production
+createdb artpick_cache
+createdb artpick_queue
+createdb artpick_cable
+
+# Voer alle migraties uit
+RAILS_ENV=production bin/rails db:prepare
 ```
 
 ## 3. Admin Gebruiker Aanmaken
@@ -81,8 +105,13 @@ Setting.update_results_intro("Welkom bij de ArtPick resultaten!")
 ## 5. Verplichte Environment Variabelen
 
 ```bash
-# Database
+# Database (Primary)
 DATABASE_URL=postgresql://user:pass@host:5432/artpick_production
+
+# Aparte Databases voor Cache, Queue en Cable
+CACHE_DATABASE_URL=postgresql://user:pass@host:5432/artpick_cache
+QUEUE_DATABASE_URL=postgresql://user:pass@host:5432/artpick_queue
+CABLE_DATABASE_URL=postgresql://user:pass@host:5432/artpick_cable
 
 # Rails
 RAILS_ENV=production
