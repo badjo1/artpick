@@ -1,0 +1,162 @@
+<!-- Admin Sidebar Navigation -->
+<aside class="admin-sidebar">
+  <!-- Sidebar Header -->
+  <div class="admin-sidebar-header">
+    <%= link_to admin_root_path do %>
+      <div class="admin-logo">
+        <div class="admin-logo-icon">◆</div>
+        <div class="admin-logo-text">THE CONTINUUM</div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="admin-nav">
+    <%= link_to admin_root_path, class: "admin-nav-item #{current_page?(admin_root_path) ? 'active' : ''}" do %>
+      <span class="admin-nav-icon">▣</span>
+      <span class="admin-nav-label">Dashboard</span>
+    <% end %>
+
+    <%= link_to admin_exhibitions_path, class: "admin-nav-item #{controller_name == 'exhibitions' && action_name != 'artworks' ? 'active' : ''}" do %>
+      <span class="admin-nav-icon">◫</span>
+      <span class="admin-nav-label">Exhibitions</span>
+    <% end %>
+
+    <%= link_to admin_artists_path, class: "admin-nav-item #{controller_name == 'artists' ? 'active' : ''}" do %>
+      <span class="admin-nav-icon">◉</span>
+      <span class="admin-nav-label">Artists</span>
+    <% end %>
+
+    <%= link_to admin_spaces_path, class: "admin-nav-item #{controller_name == 'spaces' ? 'active' : ''}" do %>
+      <span class="admin-nav-icon">◈</span>
+      <span class="admin-nav-label">Spaces</span>
+    <% end %>
+
+    <%= link_to admin_analytics_path, class: "admin-nav-item #{current_page?(admin_analytics_path) ? 'active' : ''}" do %>
+      <span class="admin-nav-icon">◎</span>
+      <span class="admin-nav-label">Analytics</span>
+    <% end %>
+  </nav>
+
+  <!-- Sidebar Footer -->
+  <div class="admin-sidebar-footer">
+    <%= link_to "View Site", root_path, class: "admin-footer-link", target: "_blank" %>
+  </div>
+</aside>
+
+<style>
+  .admin-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 250px;
+    background: #0a0a0a;
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin-sidebar-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .admin-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .admin-logo-icon {
+    font-size: 24px;
+  }
+
+  .admin-logo-text {
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 400;
+  }
+
+  .admin-nav {
+    flex: 1;
+    padding: var(--spacing-lg) var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .admin-nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border: 1px solid transparent;
+    text-transform: uppercase;
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+  }
+
+  .admin-nav-item:hover {
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .admin-nav-item.active {
+    color: var(--color-text);
+    border-color: var(--color-text);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .admin-nav-icon {
+    font-size: 18px;
+    width: 20px;
+    text-align: center;
+  }
+
+  .admin-nav-label {
+    flex: 1;
+  }
+
+  .admin-sidebar-footer {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+    text-align: center;
+  }
+
+  .admin-footer-link {
+    display: block;
+    padding: var(--spacing-xs);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: color 0.2s;
+  }
+
+  .admin-footer-link:hover {
+    color: var(--color-text);
+  }
+
+  @media (max-width: 768px) {
+    .admin-sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.3s;
+      z-index: 100;
+    }
+
+    .admin-sidebar.open {
+      transform: translateX(0);
+    }
+  }
+</style>

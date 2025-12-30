@@ -1,0 +1,23 @@
+<div class="exhibition-card" onclick="window.location='<%= exhibition_path(exhibition) %>'">
+  <h3><%= exhibition.title %></h3>
+
+  <div class="exhibition-meta">
+    <span><%= exhibition.space.name %></span>
+    <% if exhibition.start_date %>
+      • <span><%= exhibition.start_date.strftime("%b %Y") %></span>
+    <% end %>
+  </div>
+
+  <% if exhibition.description.present? %>
+    <p><%= truncate(exhibition.description, length: 150) %></p>
+  <% end %>
+
+  <div class="exhibition-meta">
+    <%= pluralize(exhibition.artworks.count, "artwork") %>
+    • <%= pluralize(exhibition.comparisons.count, "comparison") %>
+  </div>
+
+  <div class="exhibition-status <%= exhibition.status %>">
+    <%= exhibition.status.upcase %>
+  </div>
+</div>

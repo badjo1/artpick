@@ -1,0 +1,32 @@
+<div class="artwork-card">
+  <% if artwork.file.attached? %>
+    <%= image_tag artwork.file, class: "artwork-image", alt: artwork.title %>
+  <% else %>
+    <div class="artwork-image" style="display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary);">
+      No image
+    </div>
+  <% end %>
+
+  <div class="artwork-info">
+    <h3><%= artwork.title %></h3>
+
+    <% if artwork.artist %>
+      <div class="artwork-artist"><%= artwork.artist.name %></div>
+    <% end %>
+
+    <% if defined?(rank) && rank %>
+      <div class="artwork-rank">#<%= rank %> • ELO <%= artwork.elo_score.round %></div>
+    <% else %>
+      <div class="artwork-rank">ELO <%= artwork.elo_score.round %></div>
+    <% end %>
+
+    <% if artwork.vote_count > 0 %>
+      <div class="artwork-rank" style="margin-top: 0;">
+        <%= pluralize(artwork.vote_count, "vote") %>
+        <% if artwork.favorite_count > 0 %>
+          • <%= pluralize(artwork.favorite_count, "favorite") %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

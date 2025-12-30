@@ -1,0 +1,118 @@
+<div class="public-layout">
+  <!-- Vertical sidebar with "THE CONTINUUM" -->
+  <aside class="continuum-sidebar">
+    <div class="continuum-sidebar-text">
+      <%= link_to "THE CONTINUUM", root_path, class: "continuum-title-link" %>
+    </div>
+  </aside>
+
+  <!-- Main content area -->
+  <main class="public-main-content">
+    <%= yield %>
+  </main>
+</div>
+
+<style>
+.public-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+/* Vertical sidebar */
+.continuum-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  background: #ffffff;
+  border-right: 2px solid #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.continuum-sidebar-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+}
+
+.continuum-title-link {
+  font-family: var(--font-family);
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #000000;
+  text-decoration: none;
+  text-transform: uppercase;
+  display: block;
+  padding: 2rem 0;
+  border-bottom: none !important;
+  white-space: nowrap;
+}
+
+.continuum-title-link:hover {
+  opacity: 0.7;
+  border-bottom: none !important;
+}
+
+/* Main content with left margin for sidebar */
+.public-main-content {
+  flex: 1;
+  margin-left: 100px;
+  width: calc(100% - 100px);
+}
+
+/* Mobile - smaller sidebar but still vertical on left */
+@media (max-width: 768px) {
+  .continuum-sidebar {
+    width: 80px;
+    border-right: 1px solid #000000;
+  }
+
+  .continuum-title-link {
+    font-size: 1.875rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    padding: 1.5rem 0;
+    white-space: nowrap;
+  }
+
+  .public-main-content {
+    margin-left: 80px;
+    width: calc(100% - 80px);
+  }
+}
+
+/* Extra small screens - scale down text if needed */
+@media (max-width: 480px) {
+  .continuum-sidebar {
+    width: 70px;
+  }
+
+  .continuum-title-link {
+    font-size: 1.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .public-main-content {
+    margin-left: 70px;
+    width: calc(100% - 70px);
+  }
+}
+
+/* Tablet and up - full width sidebar */
+@media (min-width: 769px) {
+  .continuum-sidebar {
+    width: 100px;
+  }
+
+  .public-main-content {
+    margin-left: 100px;
+    width: calc(100% - 100px);
+  }
+}
+</style>

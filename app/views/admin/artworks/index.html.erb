@@ -1,0 +1,42 @@
+<div class="continuum-container">
+  <div class="admin-header">
+    <h1>Artworks - <%= @exhibition.title %></h1>
+    <%= link_to "Back to Exhibitions", admin_exhibitions_path, class: "btn btn-secondary" %>
+  </div>
+
+  <div class="admin-actions">
+    <%= link_to "New Artwork", new_admin_exhibition_artwork_path(@exhibition), class: "btn btn-primary" %>
+    <%= link_to "Bulk Upload", bulk_new_admin_exhibition_artworks_path(@exhibition), class: "btn btn-secondary" %>
+  </div>
+
+  <% if @artworks.any? %>
+    <div class="artworks-grid">
+      <% @artworks.each do |artwork| %>
+        <div class="admin-artwork-card">
+          <div class="artwork-preview">
+            <% if artwork.file.attached? %>
+              <%= image_tag artwork.file, alt: artwork.title, class: "artwork-image" %>
+            <% else %>
+              <div class="placeholder">No image</div>
+            <% end %>
+          </div>
+          <div class="artwork-details">
+            <h3><%= artwork.title %></h3>
+            <% if artwork.artist %>
+              <p class="artist-name"><%= artwork.artist.name %></p>
+            <% end %>
+            <p>Position: #<%= artwork.position || "N/A" %></p>
+            <p>Elo: <%= artwork.elo_score.round %></p>
+            <p>Votes: <%= artwork.vote_count %></p>
+          </div>
+          <div class="artwork-actions">
+            <%= link_to "Edit", edit_admin_exhibition_artwork_path(@exhibition, artwork), class: "btn btn-small" %>
+            <%= button_to "Delete", admin_exhibition_artwork_path(@exhibition, artwork), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="empty-state">No artworks yet. Add some to get started.</p>
+  <% end %>
+</div>

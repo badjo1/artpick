@@ -1,0 +1,87 @@
+<div class="continuum-container">
+  <header style="border-bottom: 1px solid var(--color-border); padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
+    <h1><%= @space.name %></h1>
+
+    <% if @space.location.present? %>
+      <div style="color: var(--color-text-secondary); margin-top: var(--spacing-xs);">
+        <%= @space.location %>
+      </div>
+    <% end %>
+
+    <% if @space.description.present? %>
+      <p style="margin-top: var(--spacing-md); max-width: 800px;">
+        <%= @space.description %>
+      </p>
+    <% end %>
+
+    <% if @space.website_url.present? %>
+      <div style="margin-top: var(--spacing-md);">
+        <%= link_to "Visit Website ↗", @space.website_url, class: "btn", target: "_blank", rel: "noopener" %>
+      </div>
+    <% end %>
+
+    <div class="stats-grid" style="margin-top: var(--spacing-lg);">
+      <div class="stat-card">
+        <div class="stat-label">Exhibitions</div>
+        <div class="stat-value"><%= @exhibitions.count %></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Artworks</div>
+        <div class="stat-value"><%= @total_artworks %></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Screens</div>
+        <div class="stat-value"><%= @screens.count %></div>
+      </div>
+    </div>
+  </header>
+
+  <% if @exhibitions.any? %>
+    <section>
+      <h2>Exhibitions</h2>
+      <div class="exhibition-grid" style="margin-top: var(--spacing-lg);">
+        <% @exhibitions.each do |exhibition| %>
+          <%= render partial: "exhibitions/card", locals: { exhibition: exhibition } %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @screens.any? %>
+    <section style="margin-top: var(--spacing-xl);">
+      <h2>Screens</h2>
+      <table class="continuum-table" style="margin-top: var(--spacing-md);">
+        <thead>
+          <tr>
+            <th>Screen</th>
+            <th>Location</th>
+            <th>Current Exhibition</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @screens.each do |screen| %>
+            <tr>
+              <td><%= screen.name %></td>
+              <td><%= screen.location_description %></td>
+              <td>
+                <% if screen.exhibition %>
+                  <%= link_to screen.exhibition.title, exhibition_path(screen.exhibition) %>
+                <% else %>
+                  <span style="color: var(--color-text-secondary);">No exhibition</span>
+                <% end %>
+              </td>
+              <td>
+                <% if screen.active? %>
+                  <span style="color: var(--color-text);">Active</span>
+                <% else %>
+                  <span style="color: var(--color-text-secondary);">Inactive</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+  <% end %>
+</div>

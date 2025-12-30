@@ -1,90 +1,103 @@
-<div class="admin-container">
+<div class="continuum-container">
   <div class="admin-header">
     <h1>Admin Dashboard</h1>
-    <%= link_to "Uitloggen", session_path, data: { turbo_method: :delete }, class: "btn btn-secondary" %>
-  </div>
-
-  <div class="admin-nav">
-    <%= link_to "Dashboard", admin_root_path, class: "nav-link active" %>
-    <%= link_to "Afbeeldingen", admin_images_path, class: "nav-link" %>
-    <%= link_to "Uitnodigingslinks", admin_invite_links_path, class: "nav-link" %>
-    <%= link_to "Instellingen", edit_admin_settings_path, class: "nav-link" %>
-  </div>
-
-  <div class="dashboard-stats">
-    <div class="stat-card">
-      <h3>Totaal afbeeldingen</h3>
-      <p class="stat-number"><%= @total_images %></p>
-    </div>
-
-    <div class="stat-card">
-      <h3>Totaal stemmen</h3>
-      <p class="stat-number"><%= @total_votes %></p>
-    </div>
-
-    <div class="stat-card">
-      <h3>Actieve sessies</h3>
-      <p class="stat-number"><%= @total_sessions %></p>
-    </div>
-
-    <div class="stat-card">
-      <h3>⭐ Top 5 selecties</h3>
-      <p class="stat-number"><%= @total_favorites %></p>
-    </div>
-
-    <div class="stat-card">
-      <h3>Uitnodigingslinks</h3>
-      <p class="stat-number"><%= @total_invite_links %></p>
+    <div>
+      <%= link_to "View Site", root_path, class: "btn" %>
     </div>
   </div>
 
-  <div class="dashboard-section">
-    <h2>Top 5 Afbeeldingen</h2>
-    <table class="admin-table">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Exhibitions</div>
+      <div class="stat-value"><%= @total_exhibitions %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Artworks</div>
+      <div class="stat-value"><%= @total_artworks %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Artists</div>
+      <div class="stat-value"><%= @total_artists %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Comparisons</div>
+      <div class="stat-value"><%= @total_comparisons %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Preferences</div>
+      <div class="stat-value"><%= @total_preferences %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Sessions (24h)</div>
+      <div class="stat-value"><%= @active_sessions_count %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Check-Ins</div>
+      <div class="stat-value"><%= @total_check_ins %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Spaces</div>
+      <div class="stat-value"><%= @total_spaces %></div>
+    </div>
+  </div>
+
+  <% if @active_exhibitions.any? %>
+    <section style="margin-top: var(--spacing-xl);">
+      <h2>Active Exhibitions</h2>
+      <div class="exhibition-grid" style="margin-top: var(--spacing-md);">
+        <% @active_exhibitions.each do |exhibition| %>
+          <div class="exhibition-card">
+            <h3><%= link_to exhibition.title, admin_exhibition_path(exhibition.id) %></h3>
+            <div class="exhibition-meta"><%= exhibition.space.name %></div>
+            <div class="exhibition-meta" style="margin-top: var(--spacing-sm);">
+              <%= pluralize(exhibition.artworks.count, "artwork") %>
+              • <%= pluralize(exhibition.comparisons.count, "comparison") %>
+            </div>
+            <div style="margin-top: var(--spacing-sm);">
+              <%= link_to "Manage Artworks", admin_exhibition_artworks_path(exhibition.id), class: "btn btn-small" %>
+              <%= link_to "Analytics", admin_exhibition_analytics_path(exhibition.id), class: "btn btn-small" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <section style="margin-top: var(--spacing-xl);">
+    <h2>Recent Activity</h2>
+    <table class="continuum-table" style="margin-top: var(--spacing-md);">
       <thead>
         <tr>
-          <th>Positie</th>
-          <th>Titel</th>
-          <th>Elo Score</th>
-          <th>Stemmen</th>
-          <th>Win Rate</th>
-          <th>⭐ Top 5</th>
+          <th>Action</th>
+          <th>Exhibition</th>
+          <th>Details</th>
+          <th>Time</th>
         </tr>
       </thead>
       <tbody>
-        <% @top_images.each_with_index do |image, index| %>
+        <% @recent_check_ins.each do |check_in| %>
           <tr>
-            <td><%= index + 1 %></td>
-            <td><%= image.title %></td>
-            <td><%= image.elo_score.round %></td>
-            <td><%= image.vote_count %></td>
-            <td><%= image.win_rate %>%</td>
-            <td><%= image.favorite_count %></td>
+            <td><%= check_in.action_type.upcase %></td>
+            <td>
+              <% if check_in.exhibition %>
+                <%= link_to check_in.exhibition.title, admin_exhibition_path(check_in.exhibition.id) %>
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td>
+              <% if check_in.checkable_type == "Comparison" %>
+                Comparison #<%= check_in.checkable_id %>
+              <% elsif check_in.checkable_type == "Exhibition" %>
+                <%= check_in.checkable.title %>
+              <% else %>
+                <%= check_in.checkable_type %>
+              <% end %>
+            </td>
+            <td><%= time_ago_in_words(check_in.created_at) %> ago</td>
           </tr>
         <% end %>
       </tbody>
     </table>
-  </div>
-
-  <div class="dashboard-section">
-    <h2>Recente Stemmen</h2>
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>Winnaar</th>
-          <th>Verliezer</th>
-          <th>Tijdstip</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @recent_votes.each do |vote| %>
-          <tr>
-            <td><%= vote.winner.title %></td>
-            <td><%= vote.loser.title %></td>
-            <td><%= vote.created_at.strftime("%d-%m-%Y %H:%M") %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
+  </section>
 </div>

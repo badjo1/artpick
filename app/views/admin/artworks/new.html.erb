@@ -1,0 +1,60 @@
+<div class="continuum-container">
+  <div class="admin-header">
+    <h1>New Artwork - <%= @exhibition.title %></h1>
+    <%= link_to "Back", admin_exhibition_artworks_path(@exhibition), class: "btn btn-secondary" %>
+  </div>
+
+  <div class="form-container">
+    <%= form_with model: @artwork, url: admin_exhibition_artworks_path(@exhibition), local: true do |f| %>
+      <% if @artwork.errors.any? %>
+        <div class="error-messages">
+          <h3><%= pluralize(@artwork.errors.count, "error") %> prevented this artwork from being saved:</h3>
+          <ul>
+            <% @artwork.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= f.label :title, "Title" %>
+        <%= f.text_field :title, class: "form-input", required: true %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :artist_id, "Artist" %>
+        <%= f.select :artist_id,
+            options_from_collection_for_select(@artists, :id, :name, @artwork.artist_id),
+            { include_blank: "Select an artist" },
+            class: "form-input" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :description, "Description" %>
+        <%= f.text_area :description, class: "form-input", rows: 4 %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :year, "Year" %>
+        <%= f.number_field :year, class: "form-input" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :medium, "Medium" %>
+        <%= f.text_field :medium, class: "form-input" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :file, "Image (16:9 landscape)" %>
+        <%= f.file_field :file, accept: "image/*", class: "form-input", required: true %>
+        <p class="form-help">Upload a landscape image in 16:9 format</p>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Create Artwork", class: "btn btn-primary" %>
+        <%= link_to "Cancel", admin_exhibition_artworks_path(@exhibition), class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

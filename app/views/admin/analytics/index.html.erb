@@ -1,0 +1,68 @@
+<div class="continuum-container">
+  <div class="admin-header">
+    <h1>Analytics</h1>
+  </div>
+
+  <div class="stats-grid" style="margin-bottom: var(--spacing-xl);">
+    <div class="stat-card">
+      <div class="stat-label">Total Check-ins</div>
+      <div class="stat-value"><%= @total_check_ins %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Comparisons</div>
+      <div class="stat-value"><%= @total_comparisons %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Preferences</div>
+      <div class="stat-value"><%= @total_preferences %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Active Sessions (24h)</div>
+      <div class="stat-value"><%= @active_sessions %></div>
+    </div>
+  </div>
+
+  <h2>Check-ins by Action Type</h2>
+  <table class="continuum-table" style="margin-bottom: var(--spacing-xl);">
+    <thead>
+      <tr>
+        <th>Action Type</th>
+        <th>Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @check_ins_by_action.each do |action, count| %>
+        <tr>
+          <td style="text-transform: uppercase;"><%= action %></td>
+          <td><%= count %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <h2>Exhibition Analytics</h2>
+  <table class="continuum-table">
+    <thead>
+      <tr>
+        <th>Exhibition</th>
+        <th>Space</th>
+        <th>Artworks</th>
+        <th>Check-ins</th>
+        <th>Comparisons</th>
+        <th>Preferences</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @exhibitions.each do |stats| %>
+        <tr>
+          <td><%= link_to stats[:exhibition].title, admin_exhibition_path(stats[:exhibition].id) %></td>
+          <td><%= stats[:exhibition].space.name %></td>
+          <td><%= stats[:artworks] %></td>
+          <td><%= stats[:check_ins] %></td>
+          <td><%= stats[:comparisons] %></td>
+          <td><%= stats[:preferences] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

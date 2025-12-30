@@ -1,0 +1,234 @@
+<div class="continuum-container">
+  <div class="admin-header">
+    <h1>Manage Exhibitions</h1>
+    <%= link_to "New Exhibition", new_admin_exhibition_path, class: "btn btn-primary" %>
+  </div>
+
+  <div class="stats-grid" style="margin-bottom: var(--spacing-xl);">
+    <div class="stat-card">
+      <div class="stat-label">Active</div>
+      <div class="stat-value"><%= @active_count %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Upcoming</div>
+      <div class="stat-value"><%= @upcoming_count %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Archived</div>
+      <div class="stat-value"><%= @archived_count %></div>
+    </div>
+  </div>
+
+  <% if @exhibitions.any? %>
+    <!-- Desktop table view -->
+    <table class="continuum-table exhibitions-table-desktop">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Space</th>
+          <th>Status</th>
+          <th>Dates</th>
+          <th>Artworks</th>
+          <th>Comparisons</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @exhibitions.each do |exhibition| %>
+          <tr>
+            <td>
+              <%= link_to exhibition.title, admin_exhibition_path(exhibition.id) %>
+            </td>
+            <td><%= exhibition.space.name %></td>
+            <td style="text-transform: uppercase;"><%= exhibition.status %></td>
+            <td>
+              <% if exhibition.start_date %>
+                <%= exhibition.start_date.strftime("%b %Y") %>
+                <% if exhibition.end_date %>
+                  - <%= exhibition.end_date.strftime("%b %Y") %>
+                <% end %>
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td><%= exhibition.artworks.count %></td>
+            <td><%= exhibition.comparisons.count %></td>
+            <td style="text-align: right;">
+              <%= link_to "Artworks", admin_exhibition_artworks_path(exhibition.id), class: "btn btn-small" %>
+              <%= link_to "Edit", edit_admin_exhibition_path(exhibition.id), class: "btn btn-small" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <!-- Mobile card view -->
+    <div class="exhibitions-cards-mobile">
+      <% @exhibitions.each do |exhibition| %>
+        <div class="exhibition-card-mobile">
+          <div class="exhibition-card-header">
+            <h3><%= link_to exhibition.title, admin_exhibition_path(exhibition.id) %></h3>
+            <span class="exhibition-status <%= exhibition.status %>"><%= exhibition.status.upcase %></span>
+          </div>
+
+          <div class="exhibition-card-info">
+            <div class="info-row">
+              <span class="info-label">Space:</span>
+              <span class="info-value"><%= exhibition.space.name %></span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">Dates:</span>
+              <span class="info-value">
+                <% if exhibition.start_date %>
+                  <%= exhibition.start_date.strftime("%b %Y") %>
+                  <% if exhibition.end_date %>
+                    - <%= exhibition.end_date.strftime("%b %Y") %>
+                  <% end %>
+                <% else %>
+                  —
+                <% end %>
+              </span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">Artworks:</span>
+              <span class="info-value"><%= exhibition.artworks.count %></span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">Comparisons:</span>
+              <span class="info-value"><%= exhibition.comparisons.count %></span>
+            </div>
+          </div>
+
+          <div class="exhibition-card-actions">
+            <%= link_to "Artworks", admin_exhibition_artworks_path(exhibition.id), class: "btn btn-small" %>
+            <%= link_to "Edit", edit_admin_exhibition_path(exhibition.id), class: "btn btn-small" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p style="text-align: center; color: var(--color-text-secondary); padding: 4rem;">
+      No exhibitions yet. <%= link_to "Create one", new_admin_exhibition_path %>.
+    </p>
+  <% end %>
+</div>
+
+<style>
+/* Show table on desktop, hide cards */
+.exhibitions-table-desktop {
+  display: table;
+}
+
+.exhibitions-cards-mobile {
+  display: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  /* Hide table on mobile */
+  .exhibitions-table-desktop {
+    display: none;
+  }
+
+  /* Show cards on mobile */
+  .exhibitions-cards-mobile {
+    display: block;
+  }
+
+  .exhibition-card-mobile {
+    border: 1px solid var(--color-border);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    background: transparent;
+  }
+
+  .exhibition-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+
+  .exhibition-card-header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    flex: 1;
+  }
+
+  .exhibition-card-header h3 a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .exhibition-card-header h3 a:hover {
+    text-decoration: underline;
+  }
+
+  .exhibition-status {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--color-border);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .exhibition-status.active {
+    border-color: var(--color-text);
+    color: var(--color-text);
+  }
+
+  .exhibition-card-info {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .info-row:last-child {
+    border-bottom: none;
+  }
+
+  .info-label {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .info-value {
+    font-weight: 500;
+  }
+
+  .exhibition-card-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+  }
+
+  .exhibition-card-actions .btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  /* Make admin header stack on mobile */
+  .admin-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
+
+  .admin-header h1 {
+    font-size: 1.5rem;
+  }
+
+  /* Make stats grid stack on mobile */
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+</style>

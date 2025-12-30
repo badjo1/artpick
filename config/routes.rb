@@ -1,38 +1,63 @@
 Rails.application.routes.draw do
-  # Authentication (existing)
+  # Homepage: The Continuum intro
+  root "home#index"
+
+  # Exhibition browsing
+  resources :exhibitions, only: [:index, :show], param: :slug do
+    member do
+      get :artworks      # Grid view of all artworks
+      get :comparison    # Voting interface
+      post :compare      # Submit comparison
+      get :preferences   # Top 5 selection
+      post :preferences  # Save top 5
+    end
+
+    resources :artworks, only: [:show]
+  end
+
+  # Detail pages
+  resources :artists, only: [:index, :show]
+  resources :spaces, only: [:index, :show]
+
+  # Legacy routes (backward compatibility - redirect to current exhibition)
+  get "vote", to: "voting#index"
+  post "vote", to: "voting#vote"
+  get "favorites", to: "favorites#index"
+  post "favorites", to: "favorites#create"
+  get "results", to: "results#index"
+
+  # Authentication
   resource :session
   resources :passwords, param: :token
 
-  # Public voting flow
-  root "voting#index"
-  get "vote", to: "voting#index"
-  post "vote", to: "voting#vote"
-
-  # Favorites selection
-  get "favorites", to: "favorites#index"
-  post "favorites", to: "favorites#create"
-
-  # Results page
-  get "results", to: "results#index"
-
-  # Invite links
+  # Invites
   get "invite/:token", to: "invites#show", as: :invite
 
-  # Share & Email invites
+  # Share & Email
   post "share_email", to: "share#email"
 
   # Admin namespace
   namespace :admin do
     root "dashboard#index"
 
-    resources :images do
-      collection do
-        get :bulk_new
-        post :bulk_create
+    resources :exhibitions do
+      resources :artworks do
+        collection do
+          get :bulk_new
+          post :bulk_create
+        end
       end
     end
+
+    resources :artists
+    resources :spaces do
+      resources :screens
+    end
     resources :invite_links, only: [:index, :create, :destroy]
-    resource :settings, only: [:edit, :update]
+    resources :settings
+
+    get "analytics", to: "analytics#index"
+    get "analytics/exhibition/:id", to: "analytics#exhibition", as: :exhibition_analytics
   end
 
   # Health check

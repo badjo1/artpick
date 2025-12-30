@@ -1,0 +1,32 @@
+<div class="continuum-container">
+  <h1>Artists</h1>
+
+  <% if @artists.any? %>
+    <table class="continuum-table" style="margin-top: var(--spacing-lg);">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Artworks</th>
+          <th>Exhibitions</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @artists.each do |artist| %>
+          <tr>
+            <td><%= artist.name %></td>
+            <td><%= pluralize(artist.artworks.count, "artwork") %></td>
+            <td><%= pluralize(artist.exhibitions.count, "exhibition") %></td>
+            <td style="text-align: right;">
+              <%= link_to "View →", artist_path(artist) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p style="text-align: center; color: var(--color-text-secondary); padding: 4rem;">
+      No artists yet.
+    </p>
+  <% end %>
+</div>

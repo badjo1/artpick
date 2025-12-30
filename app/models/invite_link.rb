@@ -1,6 +1,6 @@
 class InviteLink < ApplicationRecord
   # Associations
-  has_many :votes, dependent: :nullify
+  has_many :comparisons, dependent: :nullify
 
   # Validations
   validates :token, presence: true, uniqueness: true
@@ -10,6 +10,16 @@ class InviteLink < ApplicationRecord
 
   # Scopes
   scope :active, -> { where(active: true) }
+
+  # Stats methods
+  def comparisons_count
+    comparisons.count
+  end
+
+  def unique_sessions_count
+    # Count unique voting sessions through comparisons
+    comparisons.where.not(voting_session_id: nil).distinct.count(:voting_session_id)
+  end
 
   def url
     Rails.application.routes.url_helpers.invite_url(token: token)

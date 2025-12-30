@@ -1,0 +1,112 @@
+<div class="continuum-container">
+  <div class="admin-header">
+    <div>
+      <h1><%= @space.name %></h1>
+      <% if @space.description.present? %>
+        <p style="color: var(--color-text-secondary); margin-top: var(--spacing-sm);"><%= @space.description %></p>
+      <% end %>
+    </div>
+    <div style="display: flex; gap: var(--spacing-sm);">
+      <%= link_to "Edit", edit_admin_space_path(@space), class: "btn" %>
+      <%= button_to "Delete", admin_space_path(@space), method: :delete,
+          data: { confirm: "Are you sure? This will fail if space has exhibitions." },
+          class: "btn" %>
+    </div>
+  </div>
+
+  <div class="stats-grid" style="margin-bottom: var(--spacing-xl);">
+    <div class="stat-card">
+      <div class="stat-label">Exhibitions</div>
+      <div class="stat-value"><%= @exhibitions.count %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Screens</div>
+      <div class="stat-value"><%= @screens.count %></div>
+    </div>
+    <% if @space.location.present? %>
+      <div class="stat-card">
+        <div class="stat-label">Location</div>
+        <div style="font-size: var(--font-size-base); margin-top: var(--spacing-xs);">
+          <%= @space.location %>
+        </div>
+      </div>
+    <% end %>
+    <% if @space.website_url.present? %>
+      <div class="stat-card">
+        <div class="stat-label">Website</div>
+        <div style="font-size: var(--font-size-sm); margin-top: var(--spacing-xs);">
+          <%= link_to "Visit", @space.website_url, target: "_blank", rel: "noopener" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @exhibitions.any? %>
+    <h2>Exhibitions</h2>
+    <table class="continuum-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Status</th>
+          <th>Dates</th>
+          <th>Artworks</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @exhibitions.each do |exhibition| %>
+          <tr>
+            <td><%= link_to exhibition.title, admin_exhibition_path(exhibition.id) %></td>
+            <td style="text-transform: uppercase;"><%= exhibition.status %></td>
+            <td>
+              <% if exhibition.start_date %>
+                <%= exhibition.start_date.strftime("%b %Y") %>
+                <% if exhibition.end_date %>
+                  - <%= exhibition.end_date.strftime("%b %Y") %>
+                <% end %>
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td><%= exhibition.artworks.count %></td>
+            <td style="text-align: right;">
+              <%= link_to "View", admin_exhibition_path(exhibition.id), class: "btn btn-small" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% if @screens.any? %>
+    <h2 style="margin-top: var(--spacing-xl);">Screens</h2>
+    <table class="continuum-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Exhibition</th>
+          <th>Active</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @screens.each do |screen| %>
+          <tr>
+            <td><%= screen.name %></td>
+            <td>
+              <% if screen.exhibition %>
+                <%= link_to screen.exhibition.title, admin_exhibition_path(screen.exhibition.id) %>
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td><%= screen.active? ? "✓" : "—" %></td>
+            <td style="text-align: right;">
+              <%= link_to "Edit", edit_admin_space_screen_path(@space, screen), class: "btn btn-small" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

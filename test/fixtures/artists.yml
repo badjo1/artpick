@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: Test Artist One
+  bio: A talented crypto artist
+  website_url: https://example.com/artist1
+  twitter_handle: artist1
+  instagram_handle: artist1
+
+two:
+  name: Test Artist Two
+  bio: Another talented crypto artist
+  website_url: https://example.com/artist2
+  twitter_handle: artist2
+  instagram_handle: artist2

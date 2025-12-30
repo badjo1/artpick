@@ -1,0 +1,47 @@
+<div class="continuum-container">
+  <div class="admin-header">
+    <h1>Manage Spaces</h1>
+    <%= link_to "New Space", new_admin_space_path, class: "btn btn-primary" %>
+  </div>
+
+  <% if @spaces.any? %>
+    <table class="continuum-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Location</th>
+          <th>Exhibitions</th>
+          <th>Screens</th>
+          <th>Website</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @spaces.each do |space| %>
+          <tr>
+            <td>
+              <%= link_to space.name, admin_space_path(space) %>
+            </td>
+            <td><%= space.location || "—" %></td>
+            <td><%= space.exhibitions.count %></td>
+            <td><%= space.screens.count %></td>
+            <td>
+              <% if space.website_url.present? %>
+                <%= link_to "Visit", space.website_url, target: "_blank", rel: "noopener" %>
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td style="text-align: right;">
+              <%= link_to "Edit", edit_admin_space_path(space), class: "btn btn-small" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p style="text-align: center; color: var(--color-text-secondary); padding: 4rem;">
+      No spaces yet. <%= link_to "Create one", new_admin_space_path %>.
+    </p>
+  <% end %>
+</div>

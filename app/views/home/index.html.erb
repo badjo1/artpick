@@ -1,0 +1,55 @@
+<div class="continuum-container">
+  <section class="hero">
+    <h1>THE CONTINUUM</h1>
+    <p>A multi-exhibition platform for crypto art. Explore exhibitions, vote on artworks, and discover emerging artists.</p>
+  </section>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Exhibitions</div>
+      <div class="stat-value"><%= @total_exhibitions %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Artworks</div>
+      <div class="stat-value"><%= @total_artworks %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Comparisons</div>
+      <div class="stat-value"><%= @total_comparisons %></div>
+    </div>
+  </div>
+
+  <% if @active_exhibitions.any? %>
+    <section>
+      <h2>Active Exhibitions</h2>
+      <div class="exhibition-grid">
+        <% @active_exhibitions.each do |exhibition| %>
+          <%= render partial: "exhibitions/card", locals: { exhibition: exhibition } %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @upcoming_exhibitions.any? %>
+    <section>
+      <h2>Upcoming Exhibitions</h2>
+      <div class="exhibition-grid">
+        <% @upcoming_exhibitions.each do |exhibition| %>
+          <%= render partial: "exhibitions/card", locals: { exhibition: exhibition } %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @archived_exhibitions.any? %>
+    <section>
+      <h2>Past Exhibitions</h2>
+      <div class="exhibition-grid">
+        <% @archived_exhibitions.each do |exhibition| %>
+          <%= render partial: "exhibitions/card", locals: { exhibition: exhibition } %>
+        <% end %>
+      </div>
+      <%= link_to "View All Exhibitions →", exhibitions_path, class: "btn" %>
+    </section>
+  <% end %>
+</div>

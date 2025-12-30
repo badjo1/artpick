@@ -1,0 +1,72 @@
+<%= form_with model: [:admin, exhibition], class: "continuum-form" do |form| %>
+  <% if exhibition.errors.any? %>
+    <div class="alert alert-error" style="margin-bottom: var(--spacing-lg);">
+      <strong><%= pluralize(exhibition.errors.count, "error") %> prohibited this exhibition from being saved:</strong>
+      <ul style="margin-top: var(--spacing-xs); padding-left: var(--spacing-md);">
+        <% exhibition.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= form.label :title, "Title *" %>
+    <%= form.text_field :title, required: true, class: "form-input", placeholder: "Exhibition #4" %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :slug, "Slug *" %>
+    <%= form.text_field :slug, required: true, class: "form-input", placeholder: "exhibition-4" %>
+    <small style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+      Used in public URLs (e.g., /exhibitions/exhibition-4)
+    </small>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :space_id, "Space *" %>
+    <%= form.collection_select :space_id, @spaces, :id, :name, { prompt: "Select a space" }, { required: true, class: "form-select" } %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :description, "Description" %>
+    <%= form.text_area :description, rows: 4, class: "form-textarea", placeholder: "Brief description of the exhibition..." %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :status, "Status *" %>
+    <%= form.select :status, [["Upcoming", "upcoming"], ["Active", "active"], ["Archived", "archived"]], {}, { required: true, class: "form-select" } %>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+    <div class="form-group">
+      <%= form.label :start_date, "Start Date" %>
+      <%= form.date_field :start_date, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :end_date, "End Date" %>
+      <%= form.date_field :end_date, class: "form-input" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :luma_url, "Luma URL" %>
+    <%= form.url_field :luma_url, class: "form-input", placeholder: "https://luma.com/..." %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :manifold_url, "Manifold URL" %>
+    <%= form.url_field :manifold_url, class: "form-input", placeholder: "https://manifold.xyz/..." %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :poap_url, "POAP URL" %>
+    <%= form.url_field :poap_url, class: "form-input", placeholder: "https://poap.xyz/..." %>
+  </div>
+
+  <div class="form-actions" style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-lg);">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", exhibition.persisted? ? admin_exhibition_path(exhibition.id) : admin_exhibitions_path, class: "btn" %>
+  </div>
+<% end %>

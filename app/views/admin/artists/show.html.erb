@@ -1,0 +1,112 @@
+<div class="continuum-container">
+  <div class="admin-header">
+    <div>
+      <h1><%= @artist.name %></h1>
+      <% if @artist.bio.present? %>
+        <p style="color: var(--color-text-secondary); margin-top: var(--spacing-sm);"><%= @artist.bio %></p>
+      <% end %>
+    </div>
+    <div style="display: flex; gap: var(--spacing-sm);">
+      <%= link_to "Edit", edit_admin_artist_path(@artist), class: "btn" %>
+      <%= button_to "Delete", admin_artist_path(@artist), method: :delete,
+          data: { confirm: "Are you sure? This will fail if artist has artworks." },
+          class: "btn" %>
+    </div>
+  </div>
+
+<div class="stats-grid" style="margin-bottom: var(--spacing-xl);">
+    <div class="stat-card">
+      <div class="stat-label">Artworks</div>
+      <div class="stat-value"><%= @artworks.count %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Exhibitions</div>
+      <div class="stat-value"><%= @exhibitions.count %></div>
+    </div>
+    <% if @artist.website_url.present? %>
+      <div class="stat-card">
+        <div class="stat-label">Website</div>
+        <div style="font-size: var(--font-size-sm); margin-top: var(--spacing-xs);">
+          <%= link_to "Visit", @artist.website_url, target: "_blank", rel: "noopener" %>
+        </div>
+      </div>
+    <% end %>
+    <% if @artist.twitter_handle.present? || @artist.instagram_handle.present? %>
+      <div class="stat-card">
+        <div class="stat-label">Social</div>
+        <div style="font-size: var(--font-size-sm); margin-top: var(--spacing-xs);">
+          <% if @artist.twitter_handle.present? %>
+            <%= link_to "X", "https://twitter.com/#{@artist.twitter_handle}", target: "_blank", rel: "noopener" %>
+          <% end %>
+          <% if @artist.instagram_handle.present? %>
+            <%= link_to "Instagram", "https://instagram.com/#{@artist.instagram_handle}", target: "_blank", rel: "noopener" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @exhibitions.any? %>
+    <h2>Exhibitions</h2>
+    <table class="continuum-table">
+      <thead>
+        <tr>
+          <th>Exhibition</th>
+          <th>Space</th>
+          <th>Status</th>
+          <th>Dates</th>
+          <th>Artworks by <%= @artist.name %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @exhibitions.each do |exhibition| %>
+          <tr>
+            <td><%= link_to exhibition.title, admin_exhibition_path(exhibition.id) %></td>
+            <td><%= exhibition.space.name %></td>
+            <td style="text-transform: uppercase;"><%= exhibition.status %></td>
+            <td>
+              <% if exhibition.start_date %>
+                <%= exhibition.start_date.strftime("%b %Y") %>
+                <% if exhibition.end_date %>
+                  - <%= exhibition.end_date.strftime("%b %Y") %>
+                <% end %>
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td><%= @artist.artworks.where(exhibition: exhibition).count %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% if @artworks.any? %>
+    <h2 style="margin-top: var(--spacing-xl);">Artworks</h2>
+    <div class="artwork-grid">
+      <% @artworks.each do |artwork| %>
+        <div class="artwork-card">
+          <% if artwork.file.attached? %>
+            <%= image_tag artwork.file, class: "artwork-image", alt: artwork.title %>
+          <% end %>
+          <div class="artwork-info">
+            <h3><%= artwork.title %></h3>
+            <div class="artwork-artist" style="color: var(--color-text-secondary);">
+              <%= artwork.exhibition.title %>
+            </div>
+            <div class="artwork-rank">
+              ELO <%= artwork.elo_score.round %>
+              <% if artwork.position %>
+                • Rank #<%= artwork.position %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p style="text-align: center; color: var(--color-text-secondary); padding: 4rem;">
+      No artworks yet.
+    </p>
+  <% end %>
+</div>

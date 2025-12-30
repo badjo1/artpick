@@ -1,0 +1,68 @@
+<div class="continuum-container">
+  <div class="admin-header">
+    <h1>Manage Artists</h1>
+    <%= link_to "New Artist", new_admin_artist_path, class: "btn btn-primary" %>
+  </div>
+
+<div class="stats-grid" style="margin-bottom: var(--spacing-xl);">
+    <div class="stat-card">
+      <div class="stat-label">Total Artists</div>
+      <div class="stat-value"><%= @artists.count %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">With Artworks</div>
+      <div class="stat-value"><%= @artists.select { |a| a.artworks.any? }.count %></div>
+    </div>
+  </div>
+
+  <% if @artists.any? %>
+    <table class="continuum-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Artworks</th>
+          <th>Exhibitions</th>
+          <th>Website</th>
+          <th>Social</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @artists.each do |artist| %>
+          <tr>
+            <td>
+              <%= link_to artist.name, admin_artist_path(artist) %>
+            </td>
+            <td><%= artist.artworks.count %></td>
+            <td><%= artist.exhibitions.distinct.count %></td>
+            <td>
+              <% if artist.website_url.present? %>
+                <%= link_to "Website", artist.website_url, target: "_blank", rel: "noopener" %>
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td>
+              <% if artist.twitter_handle.present? %>
+                <a href="https://twitter.com/<%= artist.twitter_handle %>" target="_blank" rel="noopener">X</a>
+              <% end %>
+              <% if artist.instagram_handle.present? %>
+                <a href="https://instagram.com/<%= artist.instagram_handle %>" target="_blank" rel="noopener">IG</a>
+              <% end %>
+              <% if artist.twitter_handle.blank? && artist.instagram_handle.blank? %>
+                —
+              <% end %>
+            </td>
+            <td style="text-align: right;">
+              <%= link_to "Edit", edit_admin_artist_path(artist), class: "btn btn-small" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p style="text-align: center; color: var(--color-text-secondary); padding: 4rem;">
+      No artists yet. <%= link_to "Create one", new_admin_artist_path %>.
+    </p>
+  <% end %>
+</div>

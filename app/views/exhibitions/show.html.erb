@@ -1,0 +1,57 @@
+<div class="continuum-container">
+  <header style="border-bottom: 1px solid var(--color-border); padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
+    <h1><%= @exhibition.title %></h1>
+
+    <div style="color: var(--color-text-secondary); margin: var(--spacing-sm) 0;">
+      <%= @exhibition.space.name %>
+      <% if @exhibition.start_date %>
+        • <%= @exhibition.start_date.strftime("%B %Y") %>
+        <% if @exhibition.end_date %>
+          - <%= @exhibition.end_date.strftime("%B %Y") %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if @exhibition.description.present? %>
+      <p style="margin-top: var(--spacing-md); max-width: 800px;"><%= @exhibition.description %></p>
+    <% end %>
+
+    <div class="stats-grid" style="margin-top: var(--spacing-lg);">
+      <div class="stat-card">
+        <div class="stat-label">Artworks</div>
+        <div class="stat-value"><%= @artworks_count %></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Comparisons</div>
+        <div class="stat-value"><%= @comparisons_count %></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Status</div>
+        <div class="stat-value" style="font-size: var(--font-size-base); text-transform: uppercase;">
+          <%= @exhibition.status %>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: var(--spacing-lg); display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+      <%= link_to "View All Artworks →", artworks_exhibition_path(@exhibition), class: "btn" %>
+      <% if @exhibition.voting_open? %>
+        <%= link_to "Start Voting →", comparison_exhibition_path(@exhibition), class: "btn btn-primary" %>
+      <% end %>
+      <% if @exhibition.luma_url.present? %>
+        <%= link_to "Event Info ↗", @exhibition.luma_url, class: "btn", target: "_blank", rel: "noopener" %>
+      <% end %>
+    </div>
+  </header>
+
+  <% if @top_artworks.any? %>
+    <section>
+      <h2>Top Ranked Artworks</h2>
+      <div class="artwork-grid">
+        <% @top_artworks.each_with_index do |artwork, index| %>
+          <%= render partial: "artworks/card", locals: { artwork: artwork, rank: index + 1 } %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

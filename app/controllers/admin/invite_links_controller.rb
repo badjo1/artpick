@@ -1,4 +1,5 @@
 class Admin::InviteLinksController < ApplicationController
+  layout "admin"
   include Authentication
   before_action :require_authentication
 

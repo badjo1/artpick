@@ -3,6 +3,17 @@ require_relative "../config/environment"
 require "rails/test_help"
 require_relative "test_helpers/session_test_helper"
 
+# Workaround for Rails 8.1.1 + Minitest 6.0.0 compatibility issue
+module Rails
+  module TestUnit
+    class Runner
+      def self.run(argv = [])
+        Minitest.run(argv)
+      end
+    end
+  end
+end
+
 module ActiveSupport
   class TestCase
     # Run tests in parallel with specified workers

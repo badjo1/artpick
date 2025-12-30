@@ -1,0 +1,48 @@
+<%= form_with model: [:admin, artist], class: "continuum-form" do |form| %>
+  <% if artist.errors.any? %>
+    <div class="alert alert-error" style="margin-bottom: var(--spacing-lg);">
+      <strong><%= pluralize(artist.errors.count, "error") %> prohibited this artist from being saved:</strong>
+      <ul style="margin-top: var(--spacing-xs); padding-left: var(--spacing-md);">
+        <% artist.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= form.label :name, "Name *" %>
+    <%= form.text_field :name, required: true, class: "form-input", placeholder: "Artist Name" %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :bio, "Bio" %>
+    <%= form.text_area :bio, rows: 4, class: "form-textarea", placeholder: "Short biography..." %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :website_url, "Website URL" %>
+    <%= form.url_field :website_url, class: "form-input", placeholder: "https://artist-website.com" %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :twitter_handle, "X/Twitter Handle" %>
+    <div style="display: flex; align-items: center;">
+      <span style="margin-right: 0.5rem; color: var(--color-text-secondary);">@</span>
+      <%= form.text_field :twitter_handle, class: "form-input", placeholder: "username" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :instagram_handle, "Instagram Handle" %>
+    <div style="display: flex; align-items: center;">
+      <span style="margin-right: 0.5rem; color: var(--color-text-secondary);">@</span>
+      <%= form.text_field :instagram_handle, class: "form-input", placeholder: "username" %>
+    </div>
+  </div>
+
+  <div class="form-actions" style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-lg);">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", artist.persisted? ? admin_artist_path(artist) : admin_artists_path, class: "btn" %>
+  </div>
+<% end %>

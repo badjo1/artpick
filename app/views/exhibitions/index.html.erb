@@ -1,0 +1,42 @@
+<div class="continuum-container">
+  <h1>All Exhibitions</h1>
+
+  <% if @active_exhibitions.any? %>
+    <section>
+      <h2>Active</h2>
+      <div class="exhibition-grid">
+        <% @active_exhibitions.each do |exhibition| %>
+          <%= render partial: "card", locals: { exhibition: exhibition } %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @upcoming_exhibitions.any? %>
+    <section>
+      <h2>Upcoming</h2>
+      <div class="exhibition-grid">
+        <% @upcoming_exhibitions.each do |exhibition| %>
+          <%= render partial: "card", locals: { exhibition: exhibition } %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @archived_exhibitions.any? %>
+    <section>
+      <h2>Archived</h2>
+      <div class="exhibition-grid">
+        <% @archived_exhibitions.each do |exhibition| %>
+          <%= render partial: "card", locals: { exhibition: exhibition } %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @exhibitions.empty? %>
+    <p style="text-align: center; color: var(--color-text-secondary); padding: 4rem;">
+      No exhibitions yet.
+    </p>
+  <% end %>
+</div>

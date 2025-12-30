@@ -1,0 +1,121 @@
+<div class="continuum-container">
+  <div class="admin-header">
+    <div>
+      <h1><%= @exhibition.title %></h1>
+      <% if @exhibition.description.present? %>
+        <p style="color: var(--color-text-secondary); margin-top: var(--spacing-sm);"><%= @exhibition.description %></p>
+      <% end %>
+    </div>
+    <div style="display: flex; gap: var(--spacing-sm);">
+      <%= link_to "Edit", edit_admin_exhibition_path(@exhibition.id), class: "btn" %>
+      <%= button_to "Delete", admin_exhibition_path(@exhibition.id), method: :delete,
+          data: { confirm: "Are you sure? This will delete all artworks and data." },
+          class: "btn" %>
+    </div>
+  </div>
+
+<div class="stats-grid" style="margin-bottom: var(--spacing-xl);">
+    <div class="stat-card">
+      <div class="stat-label">Space</div>
+      <div style="font-size: var(--font-size-base); margin-top: var(--spacing-xs);">
+        <%= @exhibition.space.name %>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Status</div>
+      <div style="font-size: var(--font-size-base); margin-top: var(--spacing-xs); text-transform: uppercase;">
+        <%= @exhibition.status %>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Artworks</div>
+      <div class="stat-value"><%= @artworks.count %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Comparisons</div>
+      <div class="stat-value"><%= @comparisons_count %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Preferences</div>
+      <div class="stat-value"><%= @preferences_count %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Check-ins</div>
+      <div class="stat-value"><%= @check_ins_count %></div>
+    </div>
+  </div>
+
+  <% if @exhibition.start_date || @exhibition.end_date %>
+    <div style="margin-bottom: var(--spacing-lg); padding: var(--spacing-md); border: 1px solid var(--color-border);">
+      <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); text-transform: uppercase; margin-bottom: var(--spacing-xs);">
+        Dates
+      </div>
+      <% if @exhibition.start_date %>
+        <div>Start: <%= @exhibition.start_date.strftime("%B %d, %Y") %></div>
+      <% end %>
+      <% if @exhibition.end_date %>
+        <div>End: <%= @exhibition.end_date.strftime("%B %d, %Y") %></div>
+      <% end %>
+      <% if @exhibition.voting_open? %>
+        <div style="margin-top: var(--spacing-xs); color: var(--color-text);">✓ Voting is open</div>
+      <% else %>
+        <div style="margin-top: var(--spacing-xs); color: var(--color-text-secondary);">Voting is closed</div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if @exhibition.luma_url.present? || @exhibition.manifold_url.present? || @exhibition.poap_url.present? %>
+    <div style="margin-bottom: var(--spacing-lg); padding: var(--spacing-md); border: 1px solid var(--color-border);">
+      <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); text-transform: uppercase; margin-bottom: var(--spacing-xs);">
+        Links
+      </div>
+      <% if @exhibition.luma_url.present? %>
+        <div><%= link_to "Luma Event", @exhibition.luma_url, target: "_blank", rel: "noopener" %></div>
+      <% end %>
+      <% if @exhibition.manifold_url.present? %>
+        <div><%= link_to "Manifold Collection", @exhibition.manifold_url, target: "_blank", rel: "noopener" %></div>
+      <% end %>
+      <% if @exhibition.poap_url.present? %>
+        <div><%= link_to "POAP", @exhibition.poap_url, target: "_blank", rel: "noopener" %></div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
+    <h2>Artworks</h2>
+    <%= link_to "Manage Artworks", admin_exhibition_artworks_path(@exhibition.id), class: "btn" %>
+  </div>
+
+  <% if @artworks.any? %>
+    <div class="artwork-grid">
+      <% @artworks.limit(12).each do |artwork| %>
+        <div class="artwork-card">
+          <% if artwork.file.attached? %>
+            <%= image_tag artwork.file, class: "artwork-image", alt: artwork.title %>
+          <% end %>
+          <div class="artwork-info">
+            <h3><%= artwork.title %></h3>
+            <% if artwork.artist %>
+              <div class="artwork-artist"><%= artwork.artist.name %></div>
+            <% end %>
+            <div class="artwork-rank">
+              ELO <%= artwork.elo_score.round %>
+              <% if artwork.position %>
+                • Rank #<%= artwork.position %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <% if @artworks.count > 12 %>
+      <div style="text-align: center; margin-top: var(--spacing-lg);">
+        <%= link_to "View All #{@artworks.count} Artworks", admin_exhibition_artworks_path(@exhibition.id), class: "btn" %>
+      </div>
+    <% end %>
+  <% else %>
+    <p style="text-align: center; color: var(--color-text-secondary); padding: 4rem;">
+      No artworks yet. <%= link_to "Add artworks", admin_exhibition_artworks_path(@exhibition.id) %>.
+    </p>
+  <% end %>
+</div>

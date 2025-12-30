@@ -2,10 +2,12 @@
 
 one:
   voting_session: one
-  image: one
+  artwork: one
+  exhibition: one
   position: 1
 
 two:
   voting_session: two
-  image: two
+  artwork: two
+  exhibition: one
   position: 1

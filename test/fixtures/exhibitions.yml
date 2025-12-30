@@ -1,0 +1,26 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  space: one
+  title: JVDE Exhibition
+  description: Test exhibition one
+  start_date: 2024-12-01
+  end_date: 2026-03-01
+  status: active
+  slug: test-exhibition-1
+  luma_url: https://luma.com/test1
+  manifold_url: https://manifold.xyz/test1
+  artwork_count: 2
+  comparison_count: 2
+
+two:
+  space: two
+  title: Test Exhibition Two
+  description: Test exhibition two
+  start_date: 2025-01-01
+  end_date: 2025-06-01
+  status: upcoming
+  slug: test-exhibition-2
+  luma_url: https://luma.com/test2
+  artwork_count: 0
+  comparison_count: 0

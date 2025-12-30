@@ -1,0 +1,34 @@
+<div class="continuum-container">
+  <h1>Spaces</h1>
+
+  <% if @spaces.any? %>
+    <div class="exhibition-grid" style="margin-top: var(--spacing-lg);">
+      <% @spaces.each do |space| %>
+        <div class="exhibition-card" onclick="window.location='<%= space_path(space) %>'">
+          <h3><%= space.name %></h3>
+
+          <% if space.location.present? %>
+            <div class="exhibition-meta"><%= space.location %></div>
+          <% end %>
+
+          <% if space.description.present? %>
+            <p><%= truncate(space.description, length: 150) %></p>
+          <% end %>
+
+          <div class="exhibition-meta" style="margin-top: var(--spacing-sm);">
+            <%= pluralize(space.exhibitions.count, "exhibition") %>
+            • <%= pluralize(space.artworks.count, "artwork") %>
+          </div>
+
+          <% if space.website_url.present? %>
+            <%= link_to "Visit Website ↗", space.website_url, class: "btn btn-small", target: "_blank", rel: "noopener", style: "margin-top: var(--spacing-sm);" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p style="text-align: center; color: var(--color-text-secondary); padding: 4rem;">
+      No spaces yet.
+    </p>
+  <% end %>
+</div>

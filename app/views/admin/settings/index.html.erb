@@ -1,0 +1,35 @@
+<div class="continuum-container">
+  <div class="admin-header">
+    <h1>Settings</h1>
+  </div>
+
+  <% if @settings.any? %>
+    <table class="continuum-table">
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Value</th>
+          <th>Type</th>
+          <th>Exhibition</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @settings.each do |setting| %>
+          <tr>
+            <td><%= setting.key %></td>
+            <td><%= setting.value %></td>
+            <td><%= setting.setting_type %></td>
+            <td><%= setting.exhibition&.title || "Global" %></td>
+            <td>
+              <%= link_to "Edit", edit_admin_setting_path(setting), class: "btn btn-small" %>
+              <%= button_to "Delete", admin_setting_path(setting), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="empty-state">No settings found.</p>
+  <% end %>
+</div>

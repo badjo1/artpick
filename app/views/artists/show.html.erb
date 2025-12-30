@@ -1,0 +1,64 @@
+<div class="continuum-container">
+  <header style="border-bottom: 1px solid var(--color-border); padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
+    <h1><%= @artist.name %></h1>
+
+    <% if @artist.bio.present? %>
+      <p style="margin-top: var(--spacing-md); max-width: 800px; color: var(--color-text-secondary);">
+        <%= @artist.bio %>
+      </p>
+    <% end %>
+
+    <div style="margin-top: var(--spacing-md); display: flex; gap: var(--spacing-md); flex-wrap: wrap;">
+      <% if @artist.website_url.present? %>
+        <%= link_to "Website ↗", @artist.website_url, class: "btn", target: "_blank", rel: "noopener" %>
+      <% end %>
+      <% if @artist.twitter_handle.present? %>
+        <%= link_to "Twitter ↗", "https://twitter.com/#{@artist.twitter_handle}", class: "btn", target: "_blank", rel: "noopener" %>
+      <% end %>
+      <% if @artist.instagram_handle.present? %>
+        <%= link_to "Instagram ↗", "https://instagram.com/#{@artist.instagram_handle}", class: "btn", target: "_blank", rel: "noopener" %>
+      <% end %>
+    </div>
+
+    <div class="stats-grid" style="margin-top: var(--spacing-lg);">
+      <div class="stat-card">
+        <div class="stat-label">Artworks</div>
+        <div class="stat-value"><%= @artworks.count %></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Exhibitions</div>
+        <div class="stat-value"><%= @exhibitions.count %></div>
+      </div>
+    </div>
+  </header>
+
+  <% if @exhibitions.any? %>
+    <section style="margin-bottom: var(--spacing-xl);">
+      <h2>Exhibitions</h2>
+      <div style="margin-top: var(--spacing-md);">
+        <% @exhibitions.each do |exhibition| %>
+          <div style="padding: var(--spacing-md); border-bottom: 1px solid var(--color-border);">
+            <%= link_to exhibition.title, exhibition_path(exhibition) %>
+            <span style="color: var(--color-text-secondary); margin-left: var(--spacing-sm);">
+              • <%= exhibition.space.name %>
+              <% if exhibition.start_date %>
+                • <%= exhibition.start_date.strftime("%B %Y") %>
+              <% end %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @artworks.any? %>
+    <section>
+      <h2>Artworks</h2>
+      <div class="artwork-grid" style="margin-top: var(--spacing-lg);">
+        <% @artworks.each do |artwork| %>
+          <%= render partial: "artworks/card", locals: { artwork: artwork } %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>
