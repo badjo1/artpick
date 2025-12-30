@@ -65,8 +65,8 @@ class ExhibitionsController < ApplicationController
   end
 
   def compare
-    winning_artwork = @exhibition.artworks.find(params[:winning_artwork_id])
-    losing_artwork = @exhibition.artworks.find(params[:losing_artwork_id])
+    winning_artwork = @exhibition.artworks.find(comparison_params[:winning_artwork_id])
+    losing_artwork = @exhibition.artworks.find(comparison_params[:losing_artwork_id])
 
     Comparison.create!(
       winning_artwork: winning_artwork,
@@ -146,7 +146,7 @@ class ExhibitionsController < ApplicationController
     @voting_session.preferences.where(exhibition: @exhibition).destroy_all
 
     # Create new preferences
-    params[:artwork_ids]&.each_with_index do |artwork_id, index|
+    preference_params[:artwork_ids]&.each_with_index do |artwork_id, index|
       next if artwork_id.blank?
 
       Preference.create!(
@@ -165,8 +165,16 @@ class ExhibitionsController < ApplicationController
                 exhibition: @exhibition,
                 ip_address: request.remote_ip,
                 user_agent: request.user_agent,
-                metadata: { preferences_count: params[:artwork_ids]&.compact&.size || 0 })
+                metadata: { preferences_count: preference_params[:artwork_ids]&.compact&.size || 0 })
 
     redirect_to exhibition_path(@exhibition), notice: "Thank you for voting!"
+  end
+
+  def comparison_params
+    params.permit(:winning_artwork_id, :losing_artwork_id)
+  end
+
+  def preference_params
+    params.permit(artwork_ids: [])
   end
 end

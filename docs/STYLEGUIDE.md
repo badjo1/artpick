@@ -285,6 +285,37 @@ shared/
 <%# NOTE: This is temporary until voting closes %>
 ```
 
+### Inline Styles & Scripts
+
+**❌ NEVER use inline styles or scripts:**
+
+```erb
+<!-- ❌ Fout - geen inline styles -->
+<div style="margin-top: 1rem; color: #666;">Content</div>
+
+<!-- ❌ Fout - geen inline scripts -->
+<button onclick="doSomething()">Click</button>
+<script>
+  function doSomething() { }
+</script>
+
+<!-- ✅ Goed - gebruik CSS classes -->
+<div class="mt-md text-secondary">Content</div>
+
+<!-- ✅ Goed - gebruik Stimulus controllers -->
+<button data-action="click->example#doSomething">Click</button>
+```
+
+**Waarom:**
+- Separation of concerns (HTML, CSS, JS gescheiden)
+- Herbruikbaarheid via CSS classes
+- Eenvoudiger te onderhouden
+- Betere performance (CSS caching)
+- Consistentie in design
+
+**Uitzonderingen:**
+- Inline styles zijn ALLEEN toegestaan voor dynamische waarden die uit de backend komen (bijv. positionering gebaseerd op database data)
+
 ---
 
 ## Components & Partials

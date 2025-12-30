@@ -1,30 +1,30 @@
 <div class="continuum-container">
-  <header style="text-align: center; margin-bottom: var(--spacing-xl); padding-bottom: var(--spacing-lg); border-bottom: 1px solid var(--color-border);">
+  <header class="page-header">
     <h1>Select Your Top 5</h1>
-    <p style="color: var(--color-text-secondary); margin-top: var(--spacing-sm);">
+    <p class="text-secondary mt-sm">
       <%= @exhibition.title %>
     </p>
-    <p style="color: var(--color-text-secondary); margin-top: var(--spacing-xs);">
+    <p class="text-secondary mt-xs">
       You've completed <%= @comparisons_count %> comparisons
     </p>
   </header>
 
-  <%= form_with url: preferences_exhibition_path(@exhibition), method: :post do |f| %>
-    <div style="text-align: center; margin-bottom: var(--spacing-lg);">
-      <div id="selection-counter" style="display: inline-block; padding: var(--spacing-md); border: 1px solid var(--color-border); font-size: var(--font-size-lg);">
-        Selected: <span id="count">0</span> / 5
+  <%= form_with url: preferences_exhibition_path(@exhibition), method: :post, data: { controller: 'preferences' } do |f| %>
+    <div class="selection-counter-wrapper">
+      <div class="selection-counter">
+        Selected: <span data-preferences-target="count">0</span> / 5
       </div>
     </div>
 
     <div class="artwork-grid">
       <% @top_artworks.each do |artwork| %>
-        <label class="artwork-card" style="cursor: pointer; transition: transform 0.2s, border-color 0.2s;">
+        <label class="artwork-card artwork-selectable">
           <input type="checkbox"
                  name="artwork_ids[]"
                  value="<%= artwork.id %>"
                  class="artwork-checkbox"
-                 style="position: absolute; opacity: 0; pointer-events: none;"
-                 onchange="updateSelectionCount()"
+                 data-preferences-target="checkbox"
+                 data-action="change->preferences#updateSelectionCount"
                  <%= "checked" if @current_preferences.any? { |p| p.artwork_id == artwork.id } %>>
 
           <% if artwork.file.attached? %>
@@ -39,69 +39,16 @@
             <div class="artwork-rank">Rank #<%= artwork.position %> • ELO <%= artwork.elo_score.round %></div>
           </div>
 
-          <div class="selection-badge" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); background: var(--color-text); color: var(--color-bg); width: 32px; height: 32px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-weight: bold;">
+          <div class="selection-badge">
             ✓
           </div>
         </label>
       <% end %>
     </div>
 
-    <div style="text-align: center; margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--color-border);">
+    <div class="preferences-actions">
       <%= link_to "← Back to Voting", comparison_exhibition_path(@exhibition), class: "btn" %>
-      <%= f.submit "Save Top 5", class: "btn btn-primary", id: "submit-btn", disabled: true %>
+      <%= f.submit "Save Top 5", class: "btn btn-primary", data: { preferences_target: 'submitBtn' }, disabled: true %>
     </div>
   <% end %>
 </div>
-
-<style>
-  .artwork-checkbox:checked + .artwork-image {
-    border: 2px solid var(--color-text);
-  }
-  .artwork-card:has(.artwork-checkbox:checked) {
-    border-color: var(--color-text) !important;
-    transform: scale(0.98);
-  }
-  .artwork-card:has(.artwork-checkbox:checked) .selection-badge {
-    display: flex !important;
-  }
-</style>
-
-<script>
-  function updateSelectionCount() {
-    const checkboxes = document.querySelectorAll('.artwork-checkbox:checked');
-    const count = checkboxes.length;
-    document.getElementById('count').textContent = count;
-
-    const submitBtn = document.getElementById('submit-btn');
-    if (count === 5) {
-      submitBtn.disabled = false;
-      submitBtn.style.opacity = '1';
-    } else {
-      submitBtn.disabled = true;
-      submitBtn.style.opacity = '0.5';
-    }
-
-    // Disable unchecked boxes if 5 are selected
-    const allCheckboxes = document.querySelectorAll('.artwork-checkbox');
-    allCheckboxes.forEach(checkbox => {
-      if (!checkbox.checked && count >= 5) {
-        checkbox.disabled = true;
-        checkbox.closest('.artwork-card').style.opacity = '0.3';
-        checkbox.closest('.artwork-card').style.cursor = 'not-allowed';
-      } else {
-        checkbox.disabled = false;
-        checkbox.closest('.artwork-card').style.opacity = '1';
-        checkbox.closest('.artwork-card').style.cursor = 'pointer';
-      }
-    });
-  }
-
-  // Initialize on page load
-  document.addEventListener('DOMContentLoaded', function() {
-    // Small delay to ensure checkboxes are rendered
-    setTimeout(updateSelectionCount, 0);
-  });
-
-  // Also update on window load as backup
-  window.addEventListener('load', updateSelectionCount);
-</script>

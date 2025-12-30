@@ -5,7 +5,7 @@ class Exhibition < ApplicationRecord
   has_many :comparisons, dependent: :destroy
   has_many :preferences, dependent: :destroy
   has_many :screens
-  has_many :settings
+  has_many :settings, dependent: :destroy
   has_many :check_ins
 
   # Validations

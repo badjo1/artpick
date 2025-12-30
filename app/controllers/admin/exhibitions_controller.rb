@@ -27,7 +27,7 @@ class Admin::ExhibitionsController < ApplicationController
     @exhibition = Exhibition.new(exhibition_params)
 
     if @exhibition.save
-      redirect_to admin_exhibition_path(@exhibition), notice: "Exhibition created successfully"
+      redirect_to admin_exhibitions_path, notice: "Exhibition created successfully"
     else
       @spaces = Space.all
       render :new, status: :unprocessable_entity
@@ -40,7 +40,7 @@ class Admin::ExhibitionsController < ApplicationController
 
   def update
     if @exhibition.update(exhibition_params)
-      redirect_to admin_exhibition_path(@exhibition), notice: "Exhibition updated successfully"
+      redirect_to admin_exhibitions_path, notice: "Exhibition updated successfully"
     else
       @spaces = Space.all
       render :edit, status: :unprocessable_entity
@@ -55,7 +55,7 @@ class Admin::ExhibitionsController < ApplicationController
   private
 
   def set_exhibition
-    @exhibition = Exhibition.find(params[:id])
+    @exhibition = Exhibition.find_by!(slug: params[:id])
   end
 
   def exhibition_params

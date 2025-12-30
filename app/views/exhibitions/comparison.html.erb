@@ -1,48 +1,48 @@
 <div class="continuum-container">
-  <div style="text-align: center; margin-bottom: var(--spacing-lg); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--color-border);">
+  <div class="comparison-header">
     <h1><%= @exhibition.title %></h1>
-    <p style="color: var(--color-text-secondary); margin-top: var(--spacing-xs);">
+    <p class="text-secondary mt-xs">
       Select the artwork you prefer
     </p>
 
-    <div style="margin-top: var(--spacing-md);">
-      <div style="display: inline-block; padding: var(--spacing-xs) var(--spacing-md); border: 1px solid var(--color-border);">
+    <div class="mt-md">
+      <div class="comparison-counter">
         Comparisons: <%= @comparisons_count %> / 26 minimum
       </div>
     </div>
   </div>
 
   <% if @pair %>
-    <div class="comparison-container">
-      <%= form_with url: compare_exhibition_path(@exhibition), method: :post do |f| %>
-        <%= f.hidden_field :winning_artwork_id, value: @pair[0].id, id: "winner_input" %>
-        <%= f.hidden_field :losing_artwork_id, value: @pair[1].id, id: "loser_input" %>
+    <div class="comparison-container" data-controller="comparison">
+      <%= form_with url: compare_exhibition_path(@exhibition), method: :post, data: { comparison_target: 'form' } do |f| %>
+        <%= f.hidden_field :winning_artwork_id, value: '', data: { comparison_target: 'winnerInput' } %>
+        <%= f.hidden_field :losing_artwork_id, value: '', data: { comparison_target: 'loserInput' } %>
 
-        <button type="button" class="comparison-artwork" onclick="selectWinner(<%= @pair[0].id %>, <%= @pair[1].id %>)">
+        <button type="button"
+                class="comparison-artwork"
+                data-action="click->comparison#selectWinner"
+                data-winner-id="<%= @pair[0].id %>"
+                data-loser-id="<%= @pair[1].id %>">
           <% if @pair[0].file.attached? %>
             <%= image_tag @pair[0].file, class: "comparison-image", alt: @pair[0].title %>
           <% end %>
         </button>
 
-        <button type="button" class="comparison-artwork" onclick="selectWinner(<%= @pair[1].id %>, <%= @pair[0].id %>)">
+        <button type="button"
+                class="comparison-artwork"
+                data-action="click->comparison#selectWinner"
+                data-winner-id="<%= @pair[1].id %>"
+                data-loser-id="<%= @pair[0].id %>">
           <% if @pair[1].file.attached? %>
             <%= image_tag @pair[1].file, class: "comparison-image", alt: @pair[1].title %>
           <% end %>
         </button>
       <% end %>
     </div>
-
-    <script>
-      function selectWinner(winnerId, loserId) {
-        document.getElementById('winner_input').value = winnerId;
-        document.getElementById('loser_input').value = loserId;
-        document.querySelector('form').submit();
-      }
-    </script>
   <% else %>
-    <div style="text-align: center; padding: 4rem;">
+    <div class="empty-state">
       <h2>All pairs completed!</h2>
-      <p style="color: var(--color-text-secondary); margin: var(--spacing-md) 0;">
+      <p class="my-md">
         You've seen all possible artwork pairs.
       </p>
       <%= link_to "Select Your Top 5 →", preferences_exhibition_path(@exhibition), class: "btn btn-primary" %>

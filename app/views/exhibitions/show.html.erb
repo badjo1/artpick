@@ -1,8 +1,8 @@
 <div class="continuum-container">
-  <header style="border-bottom: 1px solid var(--color-border); padding-bottom: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
+  <header class="section-header">
     <h1><%= @exhibition.title %></h1>
 
-    <div style="color: var(--color-text-secondary); margin: var(--spacing-sm) 0;">
+    <div class="meta-info">
       <%= @exhibition.space.name %>
       <% if @exhibition.start_date %>
         • <%= @exhibition.start_date.strftime("%B %Y") %>
@@ -13,10 +13,10 @@
     </div>
 
     <% if @exhibition.description.present? %>
-      <p style="margin-top: var(--spacing-md); max-width: 800px;"><%= @exhibition.description %></p>
+      <p class="description-text"><%= @exhibition.description %></p>
     <% end %>
 
-    <div class="stats-grid" style="margin-top: var(--spacing-lg);">
+    <div class="stats-grid stats-grid-spacing">
       <div class="stat-card">
         <div class="stat-label">Artworks</div>
         <div class="stat-value"><%= @artworks_count %></div>
@@ -27,13 +27,13 @@
       </div>
       <div class="stat-card">
         <div class="stat-label">Status</div>
-        <div class="stat-value" style="font-size: var(--font-size-base); text-transform: uppercase;">
+        <div class="stat-value status-text-size">
           <%= @exhibition.status %>
         </div>
       </div>
     </div>
 
-    <div style="margin-top: var(--spacing-lg); display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+    <div class="button-group">
       <%= link_to "View All Artworks →", artworks_exhibition_path(@exhibition), class: "btn" %>
       <% if @exhibition.voting_open? %>
         <%= link_to "Start Voting →", comparison_exhibition_path(@exhibition), class: "btn" %>
@@ -48,9 +48,9 @@
   </header>
 
   <% if @top_artworks.any? %>
-    <section style="margin-bottom: var(--spacing-xl);">
+    <section class="section-spacing">
       <h2>🏆 Publiekskeuze</h2>
-      <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-lg);">
+      <p class="text-secondary mb-lg">
         Top 10 artworks based on global voting
       </p>
       <div class="artwork-grid">
@@ -58,25 +58,25 @@
           <%= render partial: "artworks/card", locals: { artwork: artwork, rank: index + 1 } %>
         <% end %>
       </div>
-      <div style="margin-top: var(--spacing-lg);">
+      <div class="action-spacing">
         <%= link_to "View Full Ranking →", artworks_exhibition_path(@exhibition), class: "btn" %>
       </div>
     </section>
   <% end %>
 
   <% if @personal_top_artworks.present? && @has_voted %>
-    <section style="margin-top: var(--spacing-xl); padding-top: var(--spacing-xl); border-top: 1px solid var(--color-border);">
+    <section class="section-divider">
       <h2>⭐ Jouw keuze</h2>
-      <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-lg);">
+      <p class="text-secondary mb-lg">
         Your personal top 5 based on your voting behavior
-        • <span style="font-size: var(--font-size-sm);">Only visible to you in this session</span>
+        • <span class="small-text">Only visible to you in this session</span>
       </p>
-      <div class="artwork-grid" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+      <div class="artwork-grid personal-grid">
         <% @personal_top_artworks.first(5).each_with_index do |artwork, index| %>
           <%= render partial: "artworks/card", locals: { artwork: artwork, rank: index + 1, personal: true } %>
         <% end %>
       </div>
-      <div style="margin-top: var(--spacing-lg);">
+      <div class="action-spacing">
         <%= link_to "Adjust Your Top 5 →", preferences_exhibition_path(@exhibition), class: "btn btn-primary" %>
       </div>
     </section>
