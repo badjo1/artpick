@@ -3,6 +3,7 @@ class VotingSession < ApplicationRecord
   has_many :comparisons, dependent: :destroy
   has_many :preferences, dependent: :destroy
   has_many :check_ins, dependent: :destroy
+  has_many :voting_session_artwork_scores, dependent: :destroy
   belongs_to :user, optional: true
   belongs_to :invite_link, optional: true
 
@@ -36,6 +37,17 @@ class VotingSession < ApplicationRecord
 
   def preferences_count
     preferences.count
+  end
+
+  def personal_ranking(limit = nil)
+    voting_session_artwork_scores
+      .order(personal_elo_score: :desc)
+      .limit(limit)
+      .includes(:artwork)
+  end
+
+  def personal_top_artworks(limit = 10)
+    personal_ranking(limit).map(&:artwork)
   end
 
   private

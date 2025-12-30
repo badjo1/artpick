@@ -97,5 +97,11 @@
   }
 
   // Initialize on page load
-  document.addEventListener('DOMContentLoaded', updateSelectionCount);
+  document.addEventListener('DOMContentLoaded', function() {
+    // Small delay to ensure checkboxes are rendered
+    setTimeout(updateSelectionCount, 0);
+  });
+
+  // Also update on window load as backup
+  window.addEventListener('load', updateSelectionCount);
 </script>

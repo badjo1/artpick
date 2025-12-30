@@ -10,12 +10,6 @@
         Comparisons: <%= @comparisons_count %> / 26 minimum
       </div>
     </div>
-
-    <% if @comparisons_count >= 26 %>
-      <div style="margin-top: var(--spacing-sm);">
-        <%= link_to "Select Your Top 5 →", preferences_exhibition_path(@exhibition), class: "btn btn-primary" %>
-      </div>
-    <% end %>
   </div>
 
   <% if @pair %>

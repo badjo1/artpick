@@ -36,7 +36,10 @@
     <div style="margin-top: var(--spacing-lg); display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
       <%= link_to "View All Artworks →", artworks_exhibition_path(@exhibition), class: "btn" %>
       <% if @exhibition.voting_open? %>
-        <%= link_to "Start Voting →", comparison_exhibition_path(@exhibition), class: "btn btn-primary" %>
+        <%= link_to "Start Voting →", comparison_exhibition_path(@exhibition), class: "btn" %>
+      <% end %>
+      <% if @session_comparisons_count.to_i >= 26 %>
+        <%= link_to "Select Your Top 5 →", preferences_exhibition_path(@exhibition), class: "btn" %>
       <% end %>
       <% if @exhibition.luma_url.present? %>
         <%= link_to "Event Info ↗", @exhibition.luma_url, class: "btn", target: "_blank", rel: "noopener" %>
@@ -45,12 +48,36 @@
   </header>
 
   <% if @top_artworks.any? %>
-    <section>
-      <h2>Top Ranked Artworks</h2>
+    <section style="margin-bottom: var(--spacing-xl);">
+      <h2>🏆 Publiekskeuze</h2>
+      <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-lg);">
+        Top 10 artworks based on global voting
+      </p>
       <div class="artwork-grid">
         <% @top_artworks.each_with_index do |artwork, index| %>
           <%= render partial: "artworks/card", locals: { artwork: artwork, rank: index + 1 } %>
         <% end %>
+      </div>
+      <div style="margin-top: var(--spacing-lg);">
+        <%= link_to "View Full Ranking →", artworks_exhibition_path(@exhibition), class: "btn" %>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @personal_top_artworks.present? && @has_voted %>
+    <section style="margin-top: var(--spacing-xl); padding-top: var(--spacing-xl); border-top: 1px solid var(--color-border);">
+      <h2>⭐ Jouw keuze</h2>
+      <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-lg);">
+        Your personal top 5 based on your voting behavior
+        • <span style="font-size: var(--font-size-sm);">Only visible to you in this session</span>
+      </p>
+      <div class="artwork-grid" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+        <% @personal_top_artworks.first(5).each_with_index do |artwork, index| %>
+          <%= render partial: "artworks/card", locals: { artwork: artwork, rank: index + 1, personal: true } %>
+        <% end %>
+      </div>
+      <div style="margin-top: var(--spacing-lg);">
+        <%= link_to "Adjust Your Top 5 →", preferences_exhibition_path(@exhibition), class: "btn btn-primary" %>
       </div>
     </section>
   <% end %>

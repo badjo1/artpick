@@ -11,6 +11,7 @@ class Artwork < ApplicationRecord
   has_many :lost_comparisons, class_name: "Comparison", foreign_key: "losing_artwork_id", dependent: :destroy
   has_many :preferences, dependent: :destroy
   has_many :check_ins, as: :checkable, dependent: :destroy
+  has_many :voting_session_artwork_scores, dependent: :destroy
 
   # Validations
   validates :title, presence: true

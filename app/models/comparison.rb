@@ -15,6 +15,7 @@ class Comparison < ApplicationRecord
 
   # Callbacks
   after_create :update_elo_scores
+  after_create :update_personal_elo_scores
   after_create :increment_invite_link_count
   after_create :create_check_in
 
@@ -32,6 +33,16 @@ class Comparison < ApplicationRecord
 
   def update_elo_scores
     Artwork.process_vote(winning_artwork_id, losing_artwork_id, exhibition)
+  end
+
+  def update_personal_elo_scores
+    return unless voting_session.present?
+
+    VotingSessionArtworkScore.process_vote(
+      winning_artwork_id,
+      losing_artwork_id,
+      voting_session
+    )
   end
 
   def increment_invite_link_count

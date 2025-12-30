@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_29_164905) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_30_191424) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -213,6 +213,20 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_29_164905) do
     t.index ["role"], name: "index_users_on_role"
   end
 
+  create_table "voting_session_artwork_scores", force: :cascade do |t|
+    t.bigint "artwork_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "exhibition_id", null: false
+    t.decimal "personal_elo_score", precision: 10, scale: 2, default: "1500.0", null: false
+    t.datetime "updated_at", null: false
+    t.integer "vote_count", default: 0, null: false
+    t.bigint "voting_session_id", null: false
+    t.index ["artwork_id"], name: "index_voting_session_artwork_scores_on_artwork_id"
+    t.index ["exhibition_id"], name: "index_voting_session_artwork_scores_on_exhibition_id"
+    t.index ["voting_session_id", "artwork_id"], name: "index_vs_artwork_scores_on_session_and_artwork", unique: true
+    t.index ["voting_session_id"], name: "index_voting_session_artwork_scores_on_voting_session_id"
+  end
+
   create_table "voting_sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -242,4 +256,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_29_164905) do
   add_foreign_key "screens", "spaces"
   add_foreign_key "sessions", "users"
   add_foreign_key "settings", "exhibitions"
+  add_foreign_key "voting_session_artwork_scores", "artworks"
+  add_foreign_key "voting_session_artwork_scores", "exhibitions"
+  add_foreign_key "voting_session_artwork_scores", "voting_sessions"
 end

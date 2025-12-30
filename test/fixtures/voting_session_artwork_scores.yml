@@ -1,0 +1,14 @@
+# Voting Session Artwork Scores (Personal Elo Ratings)
+one:
+  voting_session: one
+  artwork: one
+  exhibition: one
+  personal_elo_score: 1550.0
+  vote_count: 5
+
+two:
+  voting_session: one
+  artwork: two
+  exhibition: one
+  personal_elo_score: 1480.0
+  vote_count: 5

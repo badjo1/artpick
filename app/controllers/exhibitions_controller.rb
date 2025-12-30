@@ -17,6 +17,16 @@ class ExhibitionsController < ApplicationController
     @artworks_count = @exhibition.artworks.count
     @comparisons_count = @exhibition.comparisons.count
 
+    # Get personal rankings if voting session exists
+    if session[:voting_session_token]
+      @voting_session = VotingSession.find_by(session_token: session[:voting_session_token])
+      if @voting_session
+        @personal_top_artworks = @voting_session.personal_top_artworks(5)
+        @session_comparisons_count = @voting_session.comparisons.where(exhibition: @exhibition).count
+        @has_voted = @session_comparisons_count > 0
+      end
+    end
+
     # Log check-in
     CheckIn.log('view', @exhibition,
                 user: Current.user,
