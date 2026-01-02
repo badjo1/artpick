@@ -462,28 +462,51 @@ export default class extends Controller {
 
 ### Delete Confirmation Modal Pattern
 
-**Gebruik altijd de globale modal voor delete confirmations**
+**ALTIJD custom modal - NOOIT native browser confirms**
 
-De admin layout bevat een globale delete modal (`shared/_delete_modal.html.erb`) die op alle admin pagina's beschikbaar is.
+The Continuum gebruikt ALTIJD custom styled modals voor alle delete confirmations. Native browser confirms (`data: { turbo_confirm }` of `data: { confirm }`) zijn **verboden** omdat ze:
+- Niet te stylen zijn
+- Niet passen bij het design
+- Inconsistent zijn tussen browsers
+- Beperkte controle over content
 
-**✅ Goed - Gebruik data attributes:**
+De admin layout bevat een globale delete modal (`shared/_delete_modal.html.erb`) die automatisch beschikbaar is op alle admin pagina's via `data-controller="modal"` op de `admin-wrapper` div.
+
+---
+
+#### ✅ CORRECT - Custom Modal met Data Attributes
+
+**Trigger button (in je view):**
 ```erb
 <button type="button"
         class="btn btn-danger"
         data-action="click->modal#open"
         data-modal-title="Delete Artwork"
         data-modal-body="<p>Are you sure you want to delete <strong><%= artwork.title %></strong>?</p><p class='text-danger'>This action cannot be undone.</p>"
-        data-modal-url="<%= admin_exhibition_artwork_path(@exhibition, artwork) %>"
-        data-modal-method="delete">
+        data-modal-url="<%= admin_exhibition_artwork_path(@exhibition, artwork) %>">
   Delete
 </button>
 ```
 
-**❌ Fout - Gebruik GEEN native confirm dialogs:**
+**Let op:** Je hoeft `data-modal-method` NIET op te geven - de modal gebruikt altijd DELETE.
+
+---
+
+#### ❌ FOUT - Native Browser Confirms
+
+**Gebruik DIT NOOIT:**
 ```erb
-<!-- FOUT - native browser alert -->
+<!-- FOUT - native browser alert (lelijk, niet te stylen) -->
+<%= button_to "Delete", path, method: :delete,
+    data: { turbo_confirm: "Are you sure?" } %>
+
+<!-- FOUT - oude Rails syntax -->
 <%= button_to "Delete", path, method: :delete,
     data: { confirm: "Are you sure?" } %>
+
+<!-- FOUT - link_to met confirm -->
+<%= link_to "Delete", path, method: :delete,
+    data: { turbo_method: :delete, turbo_confirm: "Sure?" } %>
 ```
 
 **Data Attributes:**
@@ -492,7 +515,118 @@ De admin layout bevat een globale delete modal (`shared/_delete_modal.html.erb`)
 - `data-modal-url` - URL voor de delete actie
 - `data-modal-method` - HTTP methode (meestal "delete")
 
-**Modal Body Best Practices:**
+---
+
+#### ⚠️ KRITIEK: CSRF Token Handling
+
+**De modal implementatie gebruikt een server-rendered HTML form met Rails helpers.**
+
+**✅ CORRECT - Modal partial met server-rendered form:**
+```erb
+<!-- shared/_delete_modal.html.erb -->
+<div class="modal-actions">
+  <button type="button" data-action="click->modal#close" class="btn">Cancel</button>
+  <form action="#" method="post" data-modal-target="form" class="inline-form">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <%= hidden_field_tag :_method, 'delete' %>
+    <%= submit_tag "Delete", class: "btn btn-danger" %>
+  </form>
+</div>
+```
+
+**✅ CORRECT - JavaScript update alleen de form action:**
+```javascript
+// app/javascript/controllers/modal_controller.js
+static targets = ['container', 'title', 'body', 'form']
+
+open(event) {
+  const trigger = event.currentTarget
+  const url = trigger.dataset.modalUrl
+
+  // Update modal content
+  this.titleTarget.textContent = trigger.dataset.modalTitle
+  this.bodyTarget.innerHTML = trigger.dataset.modalBody
+
+  // Update form action URL (NIET de hele form regenereren!)
+  if (this.hasFormTarget && url) {
+    this.formTarget.action = url
+  }
+
+  this.containerTarget.classList.remove('hidden')
+}
+```
+
+**❌ FOUT - Genereer NOOIT forms met innerHTML:**
+```javascript
+// FOUT - Dit veroorzaakt CSRF token errors!
+this.deleteButtonTarget.innerHTML = `
+  <form action="${url}" method="post">
+    <input type="hidden" name="authenticity_token" value="${csrfToken}">
+    <input type="submit" value="Delete">
+  </form>
+`
+```
+
+**Waarom dit fout gaat:**
+1. CSRF tokens die client-side worden toegevoegd kunnen stale/invalid zijn
+2. Rails verwacht server-rendered authenticity tokens
+3. `form_authenticity_token` is niet beschikbaar in JavaScript context
+4. Meta tag CSRF token kan out-of-sync raken met sessie
+
+**Waarom onze implementatie werkt:**
+1. ✅ Form wordt server-side gerenderd met gewone HTML + Rails helpers
+2. ✅ `form_authenticity_token` genereert CSRF token op server tijdens page render
+3. ✅ Token is embedded in de HTML, altijd geldig en gesynchroniseerd met sessie
+4. ✅ JavaScript update ALLEEN de form `action` URL, niet de token
+5. ✅ Gewone POST submit (geen Turbo interference)
+
+**Technische details:**
+- `form_authenticity_token` = Rails helper die de CSRF token genereert op server
+- `hidden_field_tag :_method, 'delete'` = Rails method spoofing voor DELETE request
+- `data-modal-target="form"` = Stimulus target zodat JavaScript de form kan vinden
+- Form action start als `"#"` en wordt dynamisch geüpdatet naar de juiste URL
+
+---
+
+#### 📋 Implementation Checklist
+
+**Wanneer je een nieuwe delete button toevoegt:**
+
+1. ✅ **Layout heeft modal controller**
+   - Controleer dat de parent layout `data-controller="modal"` heeft
+   - Admin pages: `_admin_layout.html.erb` heeft dit al op `.admin-wrapper`
+   - Public pages: Voeg toe aan layout of specifieke view
+
+2. ✅ **Modal partial is geïncludeerd**
+   - Admin pages: `<%= render "shared/delete_modal" %>` staat al in `_admin_layout.html.erb`
+   - Public pages: Include de partial in je layout
+
+3. ✅ **Delete button gebruikt data attributes**
+   ```erb
+   <button type="button"
+           class="btn btn-danger"
+           data-action="click->modal#open"
+           data-modal-title="Delete [Resource]"
+           data-modal-body="<p>Are you sure...?</p>"
+           data-modal-url="<%= resource_path(@resource) %>">
+     Delete
+   </button>
+   ```
+
+4. ✅ **Controller destroy action bestaat**
+   - Route: `resources :artworks` (includes destroy)
+   - Controller method: `def destroy ... end`
+   - Redirect na delete: `redirect_to index_path, notice: "Deleted successfully"`
+
+5. ✅ **Test de functionaliteit**
+   - Hard refresh browser (Cmd+Shift+R)
+   - Klik delete button → modal opent
+   - Klik Delete in modal → resource wordt verwijderd
+   - Geen CSRF errors
+
+---
+
+#### 🎨 Modal Body Best Practices:
 - Gebruik `<strong>` voor resource naam
 - Toon hoeveel gerelateerde items verwijderd worden
 - Gebruik `class='text-danger'` voor waarschuwingen

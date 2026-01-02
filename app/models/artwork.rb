@@ -1,6 +1,6 @@
 class Artwork < ApplicationRecord
   # Active Storage attachment for the artwork file
-  has_one_attached :file
+  has_one_attached :file, dependent: :purge_later
 
   # Associations
   belongs_to :exhibition

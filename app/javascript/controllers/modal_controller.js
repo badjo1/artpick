@@ -16,7 +16,6 @@ export default class extends Controller {
       const title = trigger.dataset.modalTitle || 'Confirm Deletion'
       const body = trigger.dataset.modalBody || 'Are you sure you want to delete this item?'
       const url = trigger.dataset.modalUrl
-      const method = trigger.dataset.modalMethod || 'delete'
 
       // Update modal content
       if (this.hasTitleTarget) {
@@ -25,12 +24,10 @@ export default class extends Controller {
       if (this.hasBodyTarget) {
         this.bodyTarget.innerHTML = body
       }
+
+      // Update form action URL
       if (this.hasFormTarget && url) {
         this.formTarget.action = url
-        const methodInput = this.formTarget.querySelector('input[name="_method"]')
-        if (methodInput) {
-          methodInput.value = method
-        }
       }
     }
 

@@ -6,6 +6,13 @@ class Admin::ArtworksControllerTest < ActionDispatch::IntegrationTest
     sign_in_as @user
     @exhibition = exhibitions(:one)
     @artwork = artworks(:one)
+
+    # Attach a test file to the artwork for tests that need it
+    @artwork.file.attach(
+      io: File.open(Rails.root.join('test', 'fixtures', 'files', 'test_image.jpg')),
+      filename: 'test_image.jpg',
+      content_type: 'image/jpeg'
+    )
   end
 
   test "should get index" do
@@ -18,24 +25,69 @@ class Admin::ArtworksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "should create artwork" do
+    assert_difference('Artwork.count') do
+      post admin_exhibition_artworks_url(@exhibition), params: {
+        artwork: {
+          title: 'New Test Artwork',
+          description: 'Test description',
+          file: fixture_file_upload('test_image.jpg', 'image/jpeg')
+        }
+      }
+    end
+
+    assert_redirected_to admin_exhibition_artworks_url(@exhibition)
+    assert_equal 'Artwork created successfully', flash[:notice]
+  end
+
+  test "should not create artwork without title" do
+    assert_no_difference('Artwork.count') do
+      post admin_exhibition_artworks_url(@exhibition), params: {
+        artwork: {
+          title: ''
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
   test "should get edit" do
     get edit_admin_exhibition_artwork_url(@exhibition, @artwork)
     assert_response :success
   end
 
-  test "should update artwork" do
+  test "should update artwork title" do
     patch admin_exhibition_artwork_url(@exhibition, @artwork), params: {
-      artwork: { title: "Updated Title", description: "Updated description" }
+      artwork: { title: "Updated Title" }
     }
-
-    # Artwork model may have validation errors if update fails
-    if response.status == 422
-      skip "Update failed with validation errors"
-    end
 
     assert_redirected_to admin_exhibition_artworks_url(@exhibition)
     @artwork.reload
     assert_equal "Updated Title", @artwork.title
+    assert_equal 'Artwork updated successfully', flash[:notice]
+  end
+
+  test "should update artwork description" do
+    patch admin_exhibition_artwork_url(@exhibition, @artwork), params: {
+      artwork: { description: "Updated description" }
+    }
+
+    assert_redirected_to admin_exhibition_artworks_url(@exhibition)
+    @artwork.reload
+    assert_equal "Updated description", @artwork.description
+  end
+
+  test "should not update artwork with blank title" do
+    original_title = @artwork.title
+
+    patch admin_exhibition_artwork_url(@exhibition, @artwork), params: {
+      artwork: { title: '' }
+    }
+
+    assert_response :unprocessable_entity
+    @artwork.reload
+    assert_equal original_title, @artwork.title
   end
 
   test "should destroy artwork" do
@@ -44,6 +96,16 @@ class Admin::ArtworksControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to admin_exhibition_artworks_url(@exhibition)
+    assert_equal 'Artwork deleted successfully', flash[:notice]
+  end
+
+  test "should update exhibition artwork_count after destroy" do
+    initial_count = @exhibition.artworks.count
+
+    delete admin_exhibition_artwork_url(@exhibition, @artwork)
+
+    @exhibition.reload
+    assert_equal initial_count - 1, @exhibition.artwork_count
   end
 
   test "should get bulk_new" do
