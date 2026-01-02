@@ -50,4 +50,16 @@ class Exhibition < ApplicationRecord
   def archived?
     status == 'archived'
   end
+
+  # Calculate minimum comparisons needed before selecting top 5
+  # Each comparison shows 2 artworks, so artworks/2 ensures each is seen at least once
+  def minimum_comparisons
+    (artworks.count / 2.0).ceil
+  end
+
+  # Optimal number of comparisons for best quality rankings
+  # Seeing each artwork at least once guarantees better informed choices
+  def optimal_comparisons
+    artworks.count
+  end
 end

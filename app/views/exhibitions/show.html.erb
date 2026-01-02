@@ -38,7 +38,7 @@
       <% if @exhibition.voting_open? %>
         <%= link_to "Start Voting →", comparison_exhibition_path(@exhibition), class: "btn" %>
       <% end %>
-      <% if @session_comparisons_count.to_i >= 26 %>
+      <% if @session_comparisons_count.to_i >= @exhibition.minimum_comparisons %>
         <%= link_to "Select Your Top 5 →", preferences_exhibition_path(@exhibition), class: "btn" %>
       <% end %>
       <% if @exhibition.luma_url.present? %>

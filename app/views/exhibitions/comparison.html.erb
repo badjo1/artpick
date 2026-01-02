@@ -7,8 +7,18 @@
 
     <div class="mt-md">
       <div class="comparison-counter">
-        Comparisons: <%= @comparisons_count %> / 26 minimum
+        Comparisons: <%= @comparisons_count %> / <%= @exhibition.minimum_comparisons %> minimum
       </div>
+
+      <% if @comparisons_count >= @exhibition.minimum_comparisons %>
+        <p class="text-secondary mt-sm" style="font-size: 0.85rem; text-align: center;">
+          Hoe meer artworks je vergelijkt, hoe beter je keuze • Optimum <%= @exhibition.optimal_comparisons %> vergelijkingen
+        </p>
+
+        <div class="mt-md" style="text-align: center;">
+          <%= link_to "Select Your Top 5 →", preferences_exhibition_path(@exhibition), class: "btn btn-primary" %>
+        </div>
+      <% end %>
     </div>
   </div>
 

@@ -3,8 +3,6 @@ class ExhibitionsController < ApplicationController
   before_action :set_exhibition, except: [:index]
   before_action :ensure_voting_session, only: [:comparison, :compare, :preferences]
 
-  MINIMUM_COMPARISONS = 26
-
   def index
     @exhibitions = Exhibition.includes(:space).order(start_date: :desc)
     @active_exhibitions = @exhibitions.active
@@ -83,10 +81,11 @@ class ExhibitionsController < ApplicationController
 
   def preferences
     @comparisons_count = @voting_session.comparisons.where(exhibition: @exhibition).count
+    minimum = @exhibition.minimum_comparisons
 
-    if @comparisons_count < MINIMUM_COMPARISONS
+    if @comparisons_count < minimum
       redirect_to comparison_exhibition_path(@exhibition),
-                  alert: "Please make at least #{MINIMUM_COMPARISONS} comparisons before selecting your top 5"
+                  alert: "Please make at least #{minimum} comparisons before selecting your top 5"
       return
     end
 
