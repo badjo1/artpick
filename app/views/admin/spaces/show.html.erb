@@ -8,9 +8,15 @@
     </div>
     <div style="display: flex; gap: var(--spacing-sm);">
       <%= link_to "Edit", edit_admin_space_path(@space), class: "btn" %>
-      <%= button_to "Delete", admin_space_path(@space), method: :delete,
-          data: { confirm: "Are you sure? This will fail if space has exhibitions." },
-          class: "btn" %>
+      <button type="button"
+              class="btn"
+              data-action="click->modal#open"
+              data-modal-title="Delete Space"
+              data-modal-body="<p>Are you sure you want to delete <strong><%= @space.name %></strong>?</p><% if @exhibitions.any? %><p class='text-danger'>Warning: This space has <%= @exhibitions.count %> exhibition(s). Delete will fail unless exhibitions are removed first.</p><% else %><p class='text-danger'>This action cannot be undone.</p><% end %>"
+              data-modal-url="<%= admin_space_path(@space) %>"
+              data-modal-method="delete">
+        Delete
+      </button>
     </div>
   </div>
 

@@ -8,9 +8,15 @@
     </div>
     <div style="display: flex; gap: var(--spacing-sm);">
       <%= link_to "Edit", edit_admin_exhibition_path(@exhibition.id), class: "btn" %>
-      <%= button_to "Delete", admin_exhibition_path(@exhibition.id), method: :delete,
-          data: { confirm: "Are you sure? This will delete all artworks and data." },
-          class: "btn" %>
+      <button type="button"
+              class="btn"
+              data-action="click->modal#open"
+              data-modal-title="Delete Exhibition"
+              data-modal-body="<p>Are you sure you want to delete <strong><%= @exhibition.title %></strong>?</p><p style='margin-top: var(--spacing-sm);'>This will permanently delete:</p><ul style='margin-top: var(--spacing-xs); padding-left: var(--spacing-md);'><li><%= @artworks.count %> artwork(s)</li><li><%= @comparisons_count %> comparison(s)</li><li><%= @preferences_count %> preference(s)</li><li>All associated data</li></ul><p class='text-danger' style='margin-top: var(--spacing-sm);'>This action cannot be undone.</p>"
+              data-modal-url="<%= admin_exhibition_path(@exhibition.id) %>"
+              data-modal-method="delete">
+        Delete
+      </button>
     </div>
   </div>
 

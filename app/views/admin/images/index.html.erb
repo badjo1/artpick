@@ -28,7 +28,15 @@
         </div>
         <div class="image-actions">
           <%= link_to "Bewerken", edit_admin_image_path(image), class: "btn btn-small" %>
-          <%= button_to "Verwijderen", admin_image_path(image), method: :delete, data: { confirm: "Weet je het zeker?" }, class: "btn btn-small btn-danger" %>
+          <button type="button"
+                  class="btn btn-small btn-danger"
+                  data-action="click->modal#open"
+                  data-modal-title="Verwijder Afbeelding"
+                  data-modal-body="<p>Weet je zeker dat je <strong><%= image.title %></strong> wilt verwijderen?</p><p class='text-danger'>Deze actie kan niet ongedaan gemaakt worden.</p>"
+                  data-modal-url="<%= admin_image_path(image) %>"
+                  data-modal-method="delete">
+            Verwijderen
+          </button>
         </div>
       </div>
     <% end %>

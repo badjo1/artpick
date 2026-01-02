@@ -40,9 +40,11 @@ class Admin::ExhibitionsController < ApplicationController
 
   def update
     if @exhibition.update(exhibition_params)
-      redirect_to admin_exhibitions_path, notice: "Exhibition updated successfully"
+      flash[:notice] = "Exhibition updated successfully"
+      redirect_to admin_exhibitions_path
     else
       @spaces = Space.all
+      flash.now[:alert] = "Failed to update exhibition: #{@exhibition.errors.full_messages.join(', ')}"
       render :edit, status: :unprocessable_entity
     end
   end
@@ -55,7 +57,12 @@ class Admin::ExhibitionsController < ApplicationController
   private
 
   def set_exhibition
-    @exhibition = Exhibition.find_by!(slug: params[:id])
+    # Handle both numeric IDs and slugs
+    @exhibition = if params[:id].to_i.to_s == params[:id]
+      Exhibition.find(params[:id])
+    else
+      Exhibition.find_by!(slug: params[:id])
+    end
   end
 
   def exhibition_params

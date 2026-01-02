@@ -460,6 +460,54 @@ export default class extends Controller {
 - Server-side rendering (SEO, accessibility)
 - Geen duplicatie van HTML structuur
 
+### Delete Confirmation Modal Pattern
+
+**Gebruik altijd de globale modal voor delete confirmations**
+
+De admin layout bevat een globale delete modal (`shared/_delete_modal.html.erb`) die op alle admin pagina's beschikbaar is.
+
+**✅ Goed - Gebruik data attributes:**
+```erb
+<button type="button"
+        class="btn btn-danger"
+        data-action="click->modal#open"
+        data-modal-title="Delete Artwork"
+        data-modal-body="<p>Are you sure you want to delete <strong><%= artwork.title %></strong>?</p><p class='text-danger'>This action cannot be undone.</p>"
+        data-modal-url="<%= admin_exhibition_artwork_path(@exhibition, artwork) %>"
+        data-modal-method="delete">
+  Delete
+</button>
+```
+
+**❌ Fout - Gebruik GEEN native confirm dialogs:**
+```erb
+<!-- FOUT - native browser alert -->
+<%= button_to "Delete", path, method: :delete,
+    data: { confirm: "Are you sure?" } %>
+```
+
+**Data Attributes:**
+- `data-modal-title` - Titel van de modal (bijv. "Delete Artwork")
+- `data-modal-body` - HTML content voor de modal body (kan variabelen bevatten)
+- `data-modal-url` - URL voor de delete actie
+- `data-modal-method` - HTTP methode (meestal "delete")
+
+**Modal Body Best Practices:**
+- Gebruik `<strong>` voor resource naam
+- Toon hoeveel gerelateerde items verwijderd worden
+- Gebruik `class='text-danger'` voor waarschuwingen
+- Vermeld "This action cannot be undone"
+
+**Voorbeeld met conditionals:**
+```erb
+data-modal-body="<p>Delete <strong><%= @artist.name %></strong>?</p>
+<% if @artworks.any? %>
+  <p class='text-danger'>Warning: This artist has <%= @artworks.count %> artwork(s).</p>
+<% else %>
+  <p class='text-danger'>This action cannot be undone.</p>
+<% end %>"
+```
+
 ---
 
 ## Rails Conventions

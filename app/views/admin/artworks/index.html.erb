@@ -31,7 +31,15 @@
           </div>
           <div class="artwork-actions">
             <%= link_to "Edit", edit_admin_exhibition_artwork_path(@exhibition, artwork), class: "btn btn-small" %>
-            <%= button_to "Delete", admin_exhibition_artwork_path(@exhibition, artwork), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+            <button type="button"
+                    class="btn btn-small btn-danger"
+                    data-action="click->modal#open"
+                    data-modal-title="Delete Artwork"
+                    data-modal-body="<p>Are you sure you want to delete <strong><%= artwork.title %></strong>?</p><p class='text-danger'>This will permanently delete the artwork and all associated votes and preferences.</p>"
+                    data-modal-url="<%= admin_exhibition_artwork_path(@exhibition, artwork) %>"
+                    data-modal-method="delete">
+              Delete
+            </button>
           </div>
         </div>
       <% end %>

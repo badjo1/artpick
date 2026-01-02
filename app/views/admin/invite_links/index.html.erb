@@ -48,7 +48,15 @@
             <td><%= link.active? ? "Actief" : "Inactief" %></td>
             <td><%= link.created_at.strftime("%d-%m-%Y") %></td>
             <td>
-              <%= button_to "Verwijder", admin_invite_link_path(link), method: :delete, data: { confirm: "Weet je het zeker?" }, class: "btn btn-small btn-danger" %>
+              <button type="button"
+                      class="btn btn-small btn-danger"
+                      data-action="click->modal#open"
+                      data-modal-title="Verwijder Invite Link"
+                      data-modal-body="<p>Weet je zeker dat je deze invite link wilt verwijderen?</p><p><strong><%= link.name || 'Geen naam' %></strong></p><p class='text-danger'>Deze actie kan niet ongedaan gemaakt worden.</p>"
+                      data-modal-url="<%= admin_invite_link_path(link) %>"
+                      data-modal-method="delete">
+                Verwijder
+              </button>
             </td>
           </tr>
         <% end %>

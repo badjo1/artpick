@@ -23,7 +23,15 @@
             <td><%= setting.exhibition&.title || "Global" %></td>
             <td>
               <%= link_to "Edit", edit_admin_setting_path(setting), class: "btn btn-small" %>
-              <%= button_to "Delete", admin_setting_path(setting), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+              <button type="button"
+                      class="btn btn-small btn-danger"
+                      data-action="click->modal#open"
+                      data-modal-title="Delete Setting"
+                      data-modal-body="<p>Are you sure you want to delete setting <strong><%= setting.key %></strong>?</p><p class='text-danger'>This action cannot be undone.</p>"
+                      data-modal-url="<%= admin_setting_path(setting) %>"
+                      data-modal-method="delete">
+                Delete
+              </button>
             </td>
           </tr>
         <% end %>
