@@ -1,0 +1,46 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h1>Edit Media</h1>
+    <%= link_to "← Back to Media", admin_exhibition_exhibition_media_path(@exhibition), class: "btn btn-secondary" %>
+  </div>
+
+  <div class="form-container">
+    <%= form_with model: [:admin, @exhibition, @exhibition_medium], local: true, data: { turbo: false } do |form| %>
+      <%= render "admin/shared/form_errors", model: @exhibition_medium %>
+
+      <% if @exhibition_medium.file.attached? %>
+        <div class="form-group">
+          <%= image_tag @exhibition_medium.file, class: "form-preview-image", alt: "Current photo" %>
+          <p class="text-secondary">Current photo</p>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= form.label :file, "Replace Photo (optional)" %>
+        <%= form.file_field :file, accept: "image/*", class: "form-control" %>
+        <small class="form-help">Leave blank to keep current photo</small>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :caption, "Caption" %>
+        <%= form.text_area :caption, rows: 3, class: "form-control", placeholder: "Enter photo caption..." %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :photographer, "Photographer" %>
+        <%= form.text_field :photographer, class: "form-control", placeholder: "Photographer name..." %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :position, "Position" %>
+        <%= form.number_field :position, class: "form-control", placeholder: "Display order..." %>
+        <small class="form-help">Controls the display order in the gallery</small>
+      </div>
+
+      <div class="form-actions">
+        <%= form.submit "Save Changes", class: "btn btn-primary" %>
+        <%= link_to "Cancel", admin_exhibition_exhibition_media_path(@exhibition), class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

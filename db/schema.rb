@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_30_191424) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_05_131935) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -112,6 +112,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_30_191424) do
     t.index ["winning_artwork_id"], name: "index_comparisons_on_winning_artwork_id"
   end
 
+  create_table "exhibition_media", force: :cascade do |t|
+    t.text "caption"
+    t.datetime "created_at", null: false
+    t.bigint "exhibition_id", null: false
+    t.string "photographer"
+    t.integer "position"
+    t.datetime "updated_at", null: false
+    t.index ["exhibition_id"], name: "index_exhibition_media_on_exhibition_id"
+  end
+
   create_table "exhibitions", force: :cascade do |t|
     t.integer "artwork_count", default: 0
     t.integer "comparison_count", default: 0
@@ -120,6 +130,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_30_191424) do
     t.date "end_date"
     t.string "luma_url"
     t.string "manifold_url"
+    t.integer "number"
     t.string "poap_url"
     t.string "slug", null: false
     t.bigint "space_id", null: false
@@ -127,6 +138,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_30_191424) do
     t.string "status", default: "upcoming", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
+    t.index ["number"], name: "index_exhibitions_on_number", unique: true
     t.index ["slug"], name: "index_exhibitions_on_slug", unique: true
     t.index ["space_id"], name: "index_exhibitions_on_space_id"
     t.index ["status"], name: "index_exhibitions_on_status"
@@ -247,6 +259,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_30_191424) do
   add_foreign_key "check_ins", "voting_sessions"
   add_foreign_key "comparisons", "exhibitions"
   add_foreign_key "comparisons", "users"
+  add_foreign_key "exhibition_media", "exhibitions"
   add_foreign_key "exhibitions", "spaces"
   add_foreign_key "preferences", "artworks"
   add_foreign_key "preferences", "exhibitions"

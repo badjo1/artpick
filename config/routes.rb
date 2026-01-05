@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       post :compare      # Submit comparison
       get :preferences   # Top 5 selection
       post :preferences  # Save top 5
+      get :media         # Public media gallery (masonry grid)
     end
 
     resources :artworks, only: [:show]
@@ -44,6 +45,12 @@ Rails.application.routes.draw do
       resources :artworks do
         collection do
           get :bulk_new
+          post :bulk_create
+        end
+      end
+
+      resources :exhibition_media do
+        collection do
           post :bulk_create
         end
       end

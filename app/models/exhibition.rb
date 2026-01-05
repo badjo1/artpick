@@ -7,6 +7,7 @@ class Exhibition < ApplicationRecord
   has_many :screens, dependent: :destroy
   has_many :settings, dependent: :destroy
   has_many :check_ins, dependent: :destroy
+  has_many :exhibition_media, dependent: :destroy
 
   # Enums - Convention over Configuration
   # Automatically generates: active?, upcoming?, archived? methods
@@ -16,6 +17,7 @@ class Exhibition < ApplicationRecord
   # Validations
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: true
+  validates :number, presence: true, uniqueness: true, numericality: { only_integer: true, greater_than: 0 }
 
   # Scopes
   scope :recent, -> { order(start_date: :desc) }
@@ -53,5 +55,12 @@ class Exhibition < ApplicationRecord
   # Uses counter_cache for performance (no COUNT query)
   def optimal_comparisons
     artwork_count
+  end
+
+  # Storage prefix for Bunny CDN structured storage
+  # Format: "03-jvde-2025" (zero-padded number + slug)
+  # Used by Artwork and ExhibitionMedium for file paths
+  def storage_prefix
+    "#{number.to_s.rjust(2, '0')}-#{slug}"
   end
 end

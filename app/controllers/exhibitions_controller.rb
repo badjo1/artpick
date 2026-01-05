@@ -38,6 +38,10 @@ class ExhibitionsController < ApplicationController
     @artworks = @exhibition.artworks.includes(:artist).ranked(@exhibition)
   end
 
+  def media
+    @exhibition_media = @exhibition.exhibition_media.positioned
+  end
+
   def comparison
     unless @exhibition.voting_open?
       redirect_to exhibition_path(@exhibition), alert: "Voting is closed for this exhibition"

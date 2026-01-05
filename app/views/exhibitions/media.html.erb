@@ -1,0 +1,36 @@
+<div class="exhibition-media-page">
+  <div class="page-header">
+    <h1><%= @exhibition.title %></h1>
+    <p class="text-secondary">Exhibition Photography</p>
+    <%= link_to "← Back to Exhibition", exhibition_path(@exhibition), class: "btn btn-secondary mt-md" %>
+  </div>
+
+  <% if @exhibition_media.any? %>
+    <div class="masonry-grid">
+      <% @exhibition_media.each do |medium| %>
+        <div class="masonry-item">
+          <% if medium.file.attached? %>
+            <%= image_tag medium.file, class: "masonry-image", alt: medium.caption || "Exhibition photo", loading: "lazy" %>
+          <% end %>
+
+          <% if medium.caption.present? || medium.photographer.present? %>
+            <div class="masonry-item-caption">
+              <% if medium.caption.present? %>
+                <p class="caption-text"><%= medium.caption %></p>
+              <% end %>
+
+              <% if medium.photographer.present? %>
+                <p class="caption-photographer text-secondary">Photo by <%= medium.photographer %></p>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <p class="text-secondary">No photos available for this exhibition yet.</p>
+      <%= link_to "← Back to Exhibition", exhibition_path(@exhibition), class: "btn btn-secondary" %>
+    </div>
+  <% end %>
+</div>

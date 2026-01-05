@@ -6,9 +6,14 @@ class ExhibitionTest < ActiveSupport::TestCase
     @exhibition = exhibitions(:one)
   end
 
+  def next_exhibition_number
+    (Exhibition.maximum(:number) || 0) + 1
+  end
+
   test "should create exhibition" do
     exhibition = Exhibition.new(
       title: "Test Exhibition",
+      number: next_exhibition_number,
       space: @space,
       status: "upcoming"
     )
@@ -20,6 +25,7 @@ class ExhibitionTest < ActiveSupport::TestCase
   test "should generate slug from title" do
     exhibition = Exhibition.create!(
       title: "My New Exhibition",
+      number: next_exhibition_number,
       space: @space,
       status: "upcoming"
     )
@@ -28,15 +34,15 @@ class ExhibitionTest < ActiveSupport::TestCase
   end
 
   test "should validate presence of title" do
-    exhibition = Exhibition.new(space: @space, status: "upcoming")
+    exhibition = Exhibition.new(number: next_exhibition_number, space: @space, status: "upcoming")
 
     assert_not exhibition.valid?
     assert_includes exhibition.errors[:title], "can't be blank"
   end
 
   test "should validate uniqueness of slug" do
-    Exhibition.create!(title: "Test", slug: "test-slug", space: @space, status: "upcoming")
-    duplicate = Exhibition.new(title: "Test 2", slug: "test-slug", space: @space, status: "upcoming")
+    Exhibition.create!(title: "Test", number: next_exhibition_number, slug: "test-slug", space: @space, status: "upcoming")
+    duplicate = Exhibition.new(title: "Test 2", number: next_exhibition_number, slug: "test-slug", space: @space, status: "upcoming")
 
     assert_not duplicate.valid?
     assert_includes duplicate.errors[:slug], "has already been taken"
@@ -47,6 +53,7 @@ class ExhibitionTest < ActiveSupport::TestCase
     # Setup: Create exhibition with artworks
     exhibition = Exhibition.create!(
       title: "Exhibition with Artworks",
+      number: next_exhibition_number,
       space: @space,
       status: "active"
     )
@@ -86,6 +93,7 @@ class ExhibitionTest < ActiveSupport::TestCase
     # Setup: Create exhibition without artworks
     exhibition = Exhibition.create!(
       title: "Empty Exhibition",
+      number: next_exhibition_number,
       space: @space,
       status: "upcoming"
     )
@@ -107,6 +115,7 @@ class ExhibitionTest < ActiveSupport::TestCase
     # Setup: Create exhibition with artworks
     exhibition = Exhibition.create!(
       title: "Exhibition to Clean",
+      number: next_exhibition_number,
       space: @space,
       status: "active"
     )
@@ -163,9 +172,9 @@ class ExhibitionTest < ActiveSupport::TestCase
   end
 
   test "should have status scopes" do
-    active_ex = Exhibition.create!(title: "Active", space: @space, status: "active")
-    upcoming_ex = Exhibition.create!(title: "Upcoming", space: @space, status: "upcoming")
-    archived_ex = Exhibition.create!(title: "Archived", space: @space, status: "archived")
+    active_ex = Exhibition.create!(title: "Active", number: next_exhibition_number, space: @space, status: "active")
+    upcoming_ex = Exhibition.create!(title: "Upcoming", number: next_exhibition_number, space: @space, status: "upcoming")
+    archived_ex = Exhibition.create!(title: "Archived", number: next_exhibition_number, space: @space, status: "archived")
 
     assert_includes Exhibition.active, active_ex
     assert_not_includes Exhibition.active, upcoming_ex
@@ -181,6 +190,7 @@ class ExhibitionTest < ActiveSupport::TestCase
   test "should use counter cache for artwork_count" do
     exhibition = Exhibition.create!(
       title: "Counter Cache Test",
+      number: next_exhibition_number,
       space: @space,
       status: "active"
     )
@@ -237,6 +247,7 @@ class ExhibitionTest < ActiveSupport::TestCase
   test "minimum_comparisons should return artwork_count divided by 2" do
     exhibition = Exhibition.create!(
       title: "Min Comparisons Test",
+      number: next_exhibition_number,
       space: @space,
       status: "active",
       artwork_count: 52
@@ -248,6 +259,7 @@ class ExhibitionTest < ActiveSupport::TestCase
   test "minimum_comparisons should handle odd numbers" do
     exhibition = Exhibition.create!(
       title: "Odd Test",
+      number: next_exhibition_number,
       space: @space,
       status: "active",
       artwork_count: 51
@@ -259,6 +271,7 @@ class ExhibitionTest < ActiveSupport::TestCase
   test "minimum_comparisons should handle zero artworks" do
     exhibition = Exhibition.create!(
       title: "Empty Test",
+      number: next_exhibition_number,
       space: @space,
       status: "active",
       artwork_count: 0
@@ -270,6 +283,7 @@ class ExhibitionTest < ActiveSupport::TestCase
   test "optimal_comparisons should return artwork_count" do
     exhibition = Exhibition.create!(
       title: "Optimal Test",
+      number: next_exhibition_number,
       space: @space,
       status: "active",
       artwork_count: 52

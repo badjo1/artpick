@@ -70,7 +70,7 @@ class Admin::ExhibitionsController < ApplicationController
 
   def exhibition_params
     params.require(:exhibition).permit(
-      :title, :description, :space_id, :start_date, :end_date,
+      :title, :number, :description, :space_id, :start_date, :end_date,
       :status, :slug, :luma_url, :manifold_url, :poap_url
     )
   end

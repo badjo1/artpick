@@ -25,6 +25,7 @@ class Admin::ExhibitionsControllerTest < ActionDispatch::IntegrationTest
       post admin_exhibitions_url, params: {
         exhibition: {
           title: 'New Exhibition',
+          number: (Exhibition.maximum(:number) || 0) + 1,
           description: 'Test description',
           space_id: @space.id,
           start_date: Date.today,
@@ -108,6 +109,7 @@ class Admin::ExhibitionsControllerTest < ActionDispatch::IntegrationTest
     # Create exhibition without artworks
     exhibition = Exhibition.create!(
       title: "Empty Exhibition",
+      number: (Exhibition.maximum(:number) || 0) + 1,
       space: @space,
       status: "upcoming"
     )
