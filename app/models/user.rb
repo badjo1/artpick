@@ -3,9 +3,9 @@ class User < ApplicationRecord
 
   # Associations
   has_many :sessions, dependent: :destroy
-  has_many :comparisons
-  has_many :preferences
-  has_many :check_ins
+  has_many :comparisons, dependent: :destroy
+  has_many :preferences, dependent: :destroy
+  has_many :check_ins, dependent: :destroy
 
   # Validations
   normalizes :email_address, with: ->(e) { e.strip.downcase }

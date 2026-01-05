@@ -1,6 +1,6 @@
 class Artist < ApplicationRecord
   # Associations
-  has_many :artworks
+  has_many :artworks, dependent: :nullify
   has_many :exhibitions, through: :artworks
 
   # Validations

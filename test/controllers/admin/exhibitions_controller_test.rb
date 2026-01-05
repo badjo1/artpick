@@ -84,11 +84,39 @@ class Admin::ExhibitionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'archived', @exhibition.status
   end
 
-  test 'should destroy exhibition' do
-    assert_difference('Exhibition.count', -1) do
+  test 'should not destroy exhibition with artworks' do
+    # Ensure exhibition has artworks
+    if @exhibition.artworks.empty?
+      artwork = @exhibition.artworks.new(title: "Test Artwork", elo_score: 1500, vote_count: 0)
+      artwork.file.attach(
+        io: File.open(Rails.root.join('test', 'fixtures', 'files', 'test_image.jpg')),
+        filename: 'test_image.jpg',
+        content_type: 'image/jpeg'
+      )
+      artwork.save!
+    end
+
+    assert_no_difference('Exhibition.count') do
       delete admin_exhibition_url(@exhibition)
     end
 
     assert_redirected_to admin_exhibitions_url
+    assert_match /Cannot delete exhibition/, flash[:alert]
+  end
+
+  test 'should destroy exhibition without artworks' do
+    # Create exhibition without artworks
+    exhibition = Exhibition.create!(
+      title: "Empty Exhibition",
+      space: @space,
+      status: "upcoming"
+    )
+
+    assert_difference('Exhibition.count', -1) do
+      delete admin_exhibition_url(exhibition)
+    end
+
+    assert_redirected_to admin_exhibitions_url
+    assert_equal 'Exhibition deleted successfully', flash[:notice]
   end
 end

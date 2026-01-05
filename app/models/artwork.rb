@@ -3,7 +3,7 @@ class Artwork < ApplicationRecord
   has_one_attached :file, dependent: :purge_later
 
   # Associations
-  belongs_to :exhibition
+  belongs_to :exhibition, counter_cache: :artwork_count
   belongs_to :artist, optional: true
   has_one :space, through: :exhibition
 

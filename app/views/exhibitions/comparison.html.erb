@@ -11,11 +11,11 @@
       </div>
 
       <% if @comparisons_count >= @exhibition.minimum_comparisons %>
-        <p class="text-secondary mt-sm" style="font-size: 0.85rem; text-align: center;">
+        <p class="comparison-help-text text-secondary mt-sm">
           Hoe meer artworks je vergelijkt, hoe beter je keuze • Optimum <%= @exhibition.optimal_comparisons %> vergelijkingen
         </p>
 
-        <div class="mt-md" style="text-align: center;">
+        <div class="comparison-action mt-md">
           <%= link_to "Select Your Top 5 →", preferences_exhibition_path(@exhibition), class: "btn btn-primary" %>
         </div>
       <% end %>
@@ -28,25 +28,8 @@
         <%= f.hidden_field :winning_artwork_id, value: '', data: { comparison_target: 'winnerInput' } %>
         <%= f.hidden_field :losing_artwork_id, value: '', data: { comparison_target: 'loserInput' } %>
 
-        <button type="button"
-                class="comparison-artwork"
-                data-action="click->comparison#selectWinner"
-                data-winner-id="<%= @pair[0].id %>"
-                data-loser-id="<%= @pair[1].id %>">
-          <% if @pair[0].file.attached? %>
-            <%= image_tag @pair[0].file, class: "comparison-image", alt: @pair[0].title %>
-          <% end %>
-        </button>
-
-        <button type="button"
-                class="comparison-artwork"
-                data-action="click->comparison#selectWinner"
-                data-winner-id="<%= @pair[1].id %>"
-                data-loser-id="<%= @pair[0].id %>">
-          <% if @pair[1].file.attached? %>
-            <%= image_tag @pair[1].file, class: "comparison-image", alt: @pair[1].title %>
-          <% end %>
-        </button>
+        <%= render 'comparison_artwork', artwork: @pair[0], opponent: @pair[1] %>
+        <%= render 'comparison_artwork', artwork: @pair[1], opponent: @pair[0] %>
       <% end %>
     </div>
   <% else %>

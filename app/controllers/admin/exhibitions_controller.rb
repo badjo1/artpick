@@ -50,8 +50,11 @@ class Admin::ExhibitionsController < ApplicationController
   end
 
   def destroy
-    @exhibition.destroy
-    redirect_to admin_exhibitions_path, notice: "Exhibition deleted successfully"
+    if @exhibition.destroy
+      redirect_to admin_exhibitions_path, notice: "Exhibition deleted successfully"
+    else
+      redirect_to admin_exhibitions_path, alert: "Cannot delete exhibition: #{@exhibition.errors.full_messages.join(', ')}"
+    end
   end
 
   private

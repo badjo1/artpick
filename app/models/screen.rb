@@ -2,7 +2,7 @@ class Screen < ApplicationRecord
   # Associations
   belongs_to :space
   belongs_to :exhibition, optional: true
-  has_many :check_ins
+  has_many :check_ins, dependent: :destroy
 
   # Validations
   validates :name, presence: true

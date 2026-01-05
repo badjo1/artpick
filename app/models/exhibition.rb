@@ -1,29 +1,30 @@
 class Exhibition < ApplicationRecord
   # Associations
   belongs_to :space
-  has_many :artworks, dependent: :destroy
+  has_many :artworks, dependent: :restrict_with_error
   has_many :comparisons, dependent: :destroy
   has_many :preferences, dependent: :destroy
-  has_many :screens
+  has_many :screens, dependent: :destroy
   has_many :settings, dependent: :destroy
-  has_many :check_ins
+  has_many :check_ins, dependent: :destroy
+
+  # Enums - Convention over Configuration
+  # Automatically generates: active?, upcoming?, archived? methods
+  # And scopes: Exhibition.active, Exhibition.upcoming, Exhibition.archived
+  enum :status, { upcoming: 'upcoming', active: 'active', archived: 'archived' }, prefix: false
 
   # Validations
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: true
-  validates :status, inclusion: { in: %w[upcoming active archived] }
 
   # Scopes
-  scope :active, -> { where(status: 'active') }
-  scope :archived, -> { where(status: 'archived') }
-  scope :upcoming, -> { where(status: 'upcoming') }
   scope :recent, -> { order(start_date: :desc) }
 
   # Callbacks
   before_validation :generate_slug, if: -> { slug.blank? }
 
   def generate_slug
-    self.slug = title.parameterize
+    self.slug = title.parameterize if title.present?
   end
 
   # Use slug for URLs instead of id
@@ -39,27 +40,18 @@ class Exhibition < ApplicationRecord
     artworks.ranked(self).limit(limit)
   end
 
-  def active?
-    status == 'active'
-  end
-
-  def upcoming?
-    status == 'upcoming'
-  end
-
-  def archived?
-    status == 'archived'
-  end
-
   # Calculate minimum comparisons needed before selecting top 5
   # Each comparison shows 2 artworks, so artworks/2 ensures each is seen at least once
+  # Uses counter_cache for performance (no COUNT query)
   def minimum_comparisons
-    (artworks.count / 2.0).ceil
+    return 1 if artwork_count.zero? # Edge case: prevent division by zero
+    (artwork_count / 2.0).ceil
   end
 
   # Optimal number of comparisons for best quality rankings
   # Seeing each artwork at least once guarantees better informed choices
+  # Uses counter_cache for performance (no COUNT query)
   def optimal_comparisons
-    artworks.count
+    artwork_count
   end
 end

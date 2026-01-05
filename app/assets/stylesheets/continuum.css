@@ -116,6 +116,15 @@ a:hover {
   margin-top: var(--spacing-md);
 }
 
+.comparison-help-text {
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.comparison-action {
+  text-align: center;
+}
+
 .empty-state {
   text-align: center;
   color: var(--color-text-secondary);

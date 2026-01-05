@@ -1,0 +1,9 @@
+<button type="button"
+        class="comparison-artwork"
+        data-action="click->comparison#selectWinner"
+        data-winner-id="<%= artwork.id %>"
+        data-loser-id="<%= opponent.id %>">
+  <% if artwork.file.attached? %>
+    <%= image_tag artwork.file, class: "comparison-image", alt: artwork.title %>
+  <% end %>
+</button>
