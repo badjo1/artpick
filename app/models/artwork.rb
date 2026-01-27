@@ -87,15 +87,6 @@ class Artwork < ApplicationRecord
     (won_comparisons.count.to_f / vote_count * 100).round(1)
   end
 
-  private
-
-  def set_defaults
-    self.elo_score ||= 1500.0
-    self.vote_count ||= 0
-    self.favorite_count ||= 0
-  end
-
-  # Public method to update blob key (can be called manually)
   # Updates storage key to: {number}-{exhibition-slug}/artworks/{artwork-slug}.ext
   # Example: 03-jvde-2025/artworks/portrait-of-woman.jpg
   def update_blob_key!
@@ -105,15 +96,10 @@ class Artwork < ApplicationRecord
     artwork_slug = title.parameterize
     extension = File.extname(blob.filename.to_s)
 
-    # Generate custom key using exhibition storage prefix
     new_key = "#{exhibition.storage_prefix}/artworks/#{artwork_slug}#{extension}"
 
-    # Skip if already correct
     return true if blob.key == new_key
 
-    # Update the key in database
-    # Note: This doesn't move the actual file in storage
-    # The file will be served from the new path, and old path becomes orphaned
     blob.update_column(:key, new_key)
 
     true
@@ -124,7 +110,6 @@ class Artwork < ApplicationRecord
 
   private
 
-  # Async callback to set custom key after creation
   def set_custom_blob_key_async
     update_blob_key! if file.attached?
   end
