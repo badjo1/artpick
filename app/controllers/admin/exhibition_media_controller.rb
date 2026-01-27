@@ -23,11 +23,31 @@ class Admin::ExhibitionMediaController < ApplicationController
   end
 
   def bulk_create
-    uploaded_files = params[:files] || []
+    uploaded_files = params[:files]
+
+    # Debug logging
+    Rails.logger.info "========== BULK UPLOAD DEBUG =========="
+    Rails.logger.info "Files param: #{params[:files].inspect}"
+    Rails.logger.info "Files class: #{params[:files].class}"
+    Rails.logger.info "Files is array: #{params[:files].is_a?(Array)}"
+    Rails.logger.info "======================================="
+
+    # Handle case where no files were selected
+    if uploaded_files.blank?
+      redirect_to new_admin_exhibition_exhibition_medium_path(@exhibition),
+                  alert: "Please select at least one file to upload"
+      return
+    end
+
+    # Ensure uploaded_files is an array
+    uploaded_files = Array(uploaded_files)
+
     success_count = 0
     error_count = 0
 
     uploaded_files.each do |file|
+      next if file.blank? # Skip empty file inputs
+
       medium = @exhibition.exhibition_media.new(
         file: file,
         photographer: params[:photographer],
@@ -41,7 +61,10 @@ class Admin::ExhibitionMediaController < ApplicationController
       end
     end
 
-    if error_count.zero?
+    if success_count.zero?
+      redirect_to new_admin_exhibition_exhibition_medium_path(@exhibition),
+                  alert: "No files were uploaded. Please try again."
+    elsif error_count.zero?
       redirect_to admin_exhibition_exhibition_media_path(@exhibition),
                   notice: "Successfully uploaded #{success_count} #{'file'.pluralize(success_count)}"
     else
@@ -69,7 +92,12 @@ class Admin::ExhibitionMediaController < ApplicationController
   private
 
   def set_exhibition
-    @exhibition = Exhibition.find(params[:exhibition_id])
+    # Handle both numeric IDs and slugs
+    @exhibition = if params[:exhibition_id].to_i.to_s == params[:exhibition_id]
+      Exhibition.find(params[:exhibition_id])
+    else
+      Exhibition.find_by!(slug: params[:exhibition_id])
+    end
   end
 
   def set_exhibition_medium

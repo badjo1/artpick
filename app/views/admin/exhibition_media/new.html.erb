@@ -5,44 +5,11 @@
   </div>
 
   <div class="form-container">
-    <h2>Single Upload</h2>
-    <%= form_with model: [:admin, @exhibition, @exhibition_medium], local: true, data: { turbo: false } do |form| %>
-      <%= render "admin/shared/form_errors", model: @exhibition_medium %>
-
-      <div class="form-group">
-        <%= form.label :file, "Photo" %>
-        <%= form.file_field :file, accept: "image/*", required: true, class: "form-control" %>
-      </div>
-
-      <div class="form-group">
-        <%= form.label :caption, "Caption (optional)" %>
-        <%= form.text_area :caption, rows: 3, class: "form-control", placeholder: "Enter photo caption..." %>
-      </div>
-
-      <div class="form-group">
-        <%= form.label :photographer, "Photographer (optional)" %>
-        <%= form.text_field :photographer, class: "form-control", placeholder: "Photographer name..." %>
-      </div>
-
-      <div class="form-group">
-        <%= form.label :position, "Position (optional)" %>
-        <%= form.number_field :position, class: "form-control", placeholder: "Display order..." %>
-        <small class="form-help">Leave blank for automatic positioning</small>
-      </div>
-
-      <div class="form-actions">
-        <%= form.submit "Upload Photo", class: "btn btn-primary" %>
-        <%= link_to "Cancel", admin_exhibition_exhibition_media_path(@exhibition), class: "btn btn-secondary" %>
-      </div>
-    <% end %>
-
-    <hr class="my-lg">
-
-    <h2>Bulk Upload</h2>
-    <%= form_with url: bulk_create_admin_exhibition_exhibition_media_path(@exhibition), method: :post, local: true, data: { turbo: false } do |form| %>
+    <h2>Bulk Upload Photos</h2>
+    <%= form_with url: bulk_create_admin_exhibition_exhibition_media_path(@exhibition), method: :post, local: true, multipart: true, data: { turbo: false } do |form| %>
       <div class="form-group">
         <%= label_tag :files, "Photos" %>
-        <%= file_field_tag :files, multiple: true, accept: "image/*", required: true, class: "form-control" %>
+        <%= file_field_tag 'files[]', multiple: true, accept: "image/*", required: true, class: "form-control", direct_upload: false %>
         <small class="form-help">Select multiple photos to upload at once</small>
       </div>
 

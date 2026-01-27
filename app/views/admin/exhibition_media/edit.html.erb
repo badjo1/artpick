@@ -6,7 +6,16 @@
 
   <div class="form-container">
     <%= form_with model: [:admin, @exhibition, @exhibition_medium], local: true, data: { turbo: false } do |form| %>
-      <%= render "admin/shared/form_errors", model: @exhibition_medium %>
+      <% if @exhibition_medium.errors.any? %>
+        <div class="alert alert-error" style="margin-bottom: var(--spacing-lg);">
+          <strong><%= pluralize(@exhibition_medium.errors.count, "error") %> prohibited this media from being saved:</strong>
+          <ul style="margin-top: var(--spacing-xs); padding-left: var(--spacing-md);">
+            <% @exhibition_medium.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
 
       <% if @exhibition_medium.file.attached? %>
         <div class="form-group">
