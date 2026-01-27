@@ -12,7 +12,11 @@
       <% @exhibition_media.each do |medium| %>
         <div class="media-card">
           <% if medium.file.attached? %>
-            <%= image_tag medium.file, class: "media-image", alt: medium.caption || "Exhibition photo" %>
+            <% if medium.file.content_type.start_with?("video") %>
+              <%= video_tag url_for(medium.file), controls: true, preload: "metadata", class: "media-image" %>
+            <% else %>
+              <%= image_tag medium.file, class: "media-image", alt: medium.caption || "Exhibition photo" %>
+            <% end %>
           <% end %>
 
           <div class="media-info">

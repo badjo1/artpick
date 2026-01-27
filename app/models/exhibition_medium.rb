@@ -5,8 +5,7 @@ class ExhibitionMedium < ApplicationRecord
   validates :file, presence: true
   validates :position, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
 
-  # Temporarily disabled - enable after storage migration
-  # after_create_commit :set_custom_blob_key_async
+  after_create_commit :set_custom_blob_key_async
 
   scope :positioned, -> { where.not(position: nil).order(:position) }
 

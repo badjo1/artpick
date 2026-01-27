@@ -10,7 +10,11 @@
       <% @exhibition_media.each do |medium| %>
         <div class="masonry-item">
           <% if medium.file.attached? %>
-            <%= image_tag medium.file, class: "masonry-image", alt: medium.caption || "Exhibition photo", loading: "lazy" %>
+            <% if medium.file.content_type.start_with?("video") %>
+              <%= video_tag url_for(medium.file), controls: true, preload: "metadata", class: "masonry-image" %>
+            <% else %>
+              <%= image_tag medium.file, class: "masonry-image", alt: medium.caption || "Exhibition photo", loading: "lazy" %>
+            <% end %>
           <% end %>
 
           <% if medium.caption.present? || medium.photographer.present? %>

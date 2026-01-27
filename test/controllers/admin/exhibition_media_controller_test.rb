@@ -183,6 +183,55 @@ class Admin::ExhibitionMediaControllerTest < ActionDispatch::IntegrationTest
     assert_not ExhibitionMedium.exists?(medium.id), "Medium should be destroyed"
   end
 
+  # Video upload tests
+  test 'should create exhibition medium with video' do
+    assert_difference('ExhibitionMedium.count') do
+      post admin_exhibition_exhibition_media_url(@exhibition), params: {
+        exhibition_medium: {
+          file: fixture_file_upload('test_video.mp4', 'video/mp4'),
+          caption: 'Test video'
+        }
+      }
+    end
+
+    assert_redirected_to admin_exhibition_exhibition_media_url(@exhibition)
+
+    medium = ExhibitionMedium.last
+    assert_equal 'Test video', medium.caption
+    assert medium.file.attached?
+    assert_equal 'video/mp4', medium.file.content_type
+  end
+
+  test 'should bulk create with video files' do
+    video = fixture_file_upload('test_video.mp4', 'video/mp4')
+    image = fixture_file_upload('test_image.jpg', 'image/jpeg')
+
+    assert_difference('ExhibitionMedium.count', 2) do
+      post bulk_create_admin_exhibition_exhibition_media_url(@exhibition), params: {
+        files: [video, image],
+        photographer: 'Mixed Upload'
+      }
+    end
+
+    assert_redirected_to admin_exhibition_exhibition_media_url(@exhibition)
+  end
+
+  test 'should generate correct blob key for uploaded video' do
+    assert_difference('ExhibitionMedium.count') do
+      post admin_exhibition_exhibition_media_url(@exhibition), params: {
+        exhibition_medium: {
+          file: fixture_file_upload('test_video.mp4', 'video/mp4'),
+          caption: 'Video storage test'
+        }
+      }
+    end
+
+    medium = ExhibitionMedium.last
+    expected_prefix = "#{@exhibition.storage_prefix}/media/"
+    assert medium.file.blob.key.start_with?(expected_prefix),
+           "Blob key should start with #{expected_prefix}, got: #{medium.file.blob.key}"
+  end
+
   # Storage structure tests
   test 'should generate correct blob key for uploaded file' do
     medium = nil
