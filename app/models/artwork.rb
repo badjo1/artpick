@@ -92,7 +92,7 @@ class Artwork < ApplicationRecord
   end
 
   def self.generate_storage_key(exhibition, title, filename)
-    extension = File.extname(filename)
+    extension = File.extname(filename).downcase
     slug = title.parameterize
     "#{exhibition.storage_prefix}/artworks/#{slug}#{extension}"
   end

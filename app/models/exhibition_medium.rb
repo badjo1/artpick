@@ -11,8 +11,8 @@ class ExhibitionMedium < ApplicationRecord
   scope :positioned, -> { where.not(position: nil).order(:position) }
 
   def self.generate_storage_key(exhibition, filename)
-    extension = File.extname(filename)
-    base = File.basename(filename, extension)
+    extension = File.extname(filename).downcase
+    base = File.basename(filename, File.extname(filename)).parameterize
     timestamp = Time.current.to_i
     random = SecureRandom.hex(4)
     "#{exhibition.storage_prefix}/media/#{base}-#{timestamp}-#{random}#{extension}"

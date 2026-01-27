@@ -29,7 +29,7 @@ namespace :storage do
       end
 
       old_key = artwork.file.blob.key
-      new_key = "#{artwork.exhibition.storage_prefix}/artworks/#{artwork.title.parameterize}#{File.extname(artwork.file.blob.filename.to_s)}"
+      new_key = "#{artwork.exhibition.storage_prefix}/artworks/#{artwork.title.parameterize}#{File.extname(artwork.file.blob.filename.to_s).downcase}"
 
       # Skip if already at correct location
       if old_key == new_key
@@ -127,7 +127,9 @@ namespace :storage do
       end
 
       old_key = medium.file.blob.key
-      new_key = "#{medium.exhibition.storage_prefix}/media/#{medium.file.blob.filename}"
+      sanitized_name = File.basename(medium.file.blob.filename.to_s, File.extname(medium.file.blob.filename.to_s)).parameterize
+      extension = File.extname(medium.file.blob.filename.to_s).downcase
+      new_key = "#{medium.exhibition.storage_prefix}/media/#{sanitized_name}#{extension}"
 
       # Skip if already at correct location
       if old_key == new_key
