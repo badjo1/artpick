@@ -46,9 +46,9 @@
       </div>
 
       <div class="form-group">
-        <%= f.label :file, "Image (16:9 landscape)" %>
-        <%= f.file_field :file, accept: "image/*", class: "form-input", required: true %>
-        <p class="form-help">Upload a landscape image in 16:9 format</p>
+        <%= f.label :file, "Image or Video (16:9 landscape)" %>
+        <%= f.file_field :file, accept: "image/jpeg,image/png,image/gif,image/webp,video/mp4", class: "form-input", required: true %>
+        <p class="form-help">Upload a landscape image or MP4 video in 16:9 format</p>
       </div>
 
       <div class="form-actions">

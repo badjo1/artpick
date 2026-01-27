@@ -26,7 +26,7 @@
         </p>
         <%= f.file_field :files,
             multiple: true,
-            accept: "image/*",
+            accept: "image/jpeg,image/png,image/gif,image/webp,video/mp4",
             style: "display: none;",
             id: "fileInput",
             onchange: "handleFiles(this.files)" %>
@@ -95,20 +95,33 @@ function updatePreview() {
   fileCount.textContent = selectedFiles.length;
 
   selectedFiles.forEach((file, index) => {
-    const reader = new FileReader();
+    const div = document.createElement('div');
+    div.className = 'file-preview-item';
 
-    reader.onload = (e) => {
-      const div = document.createElement('div');
-      div.className = 'file-preview-item';
+    if (file.type.startsWith('video')) {
+      const video = document.createElement('video');
+      video.src = URL.createObjectURL(file);
+      video.controls = true;
+      video.preload = 'metadata';
+      video.style.maxWidth = '100%';
       div.innerHTML = `
-        <img src="${e.target.result}" alt="${file.name}">
         <p class="file-name">${file.name}</p>
         <button type="button" class="file-preview-remove" onclick="removeFile(${index})" title="Remove">×</button>
       `;
+      div.prepend(video);
       filePreviewGrid.appendChild(div);
-    };
-
-    reader.readAsDataURL(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        div.innerHTML = `
+          <img src="${e.target.result}" alt="${file.name}">
+          <p class="file-name">${file.name}</p>
+          <button type="button" class="file-preview-remove" onclick="removeFile(${index})" title="Remove">×</button>
+        `;
+        filePreviewGrid.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    }
   });
 
   // Update the file input with selected files

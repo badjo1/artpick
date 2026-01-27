@@ -15,7 +15,11 @@
         <div class="admin-artwork-card">
           <div class="artwork-preview">
             <% if artwork.file.attached? %>
-              <%= image_tag artwork.file, alt: artwork.title, class: "artwork-image" %>
+              <% if artwork.video? %>
+                <%= video_tag url_for(artwork.file), controls: true, preload: "metadata", class: "artwork-image" %>
+              <% else %>
+                <%= image_tag artwork.file, alt: artwork.title, class: "artwork-image" %>
+              <% end %>
             <% else %>
               <div class="placeholder">No image</div>
             <% end %>

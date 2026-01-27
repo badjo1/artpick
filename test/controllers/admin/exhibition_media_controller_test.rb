@@ -232,6 +232,19 @@ class Admin::ExhibitionMediaControllerTest < ActionDispatch::IntegrationTest
            "Blob key should start with #{expected_prefix}, got: #{medium.file.blob.key}"
   end
 
+  test 'should reject unsupported file type' do
+    assert_no_difference('ExhibitionMedium.count') do
+      post admin_exhibition_exhibition_media_url(@exhibition), params: {
+        exhibition_medium: {
+          file: fixture_file_upload('test_document.pdf', 'application/pdf'),
+          caption: 'PDF test'
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
   # Storage structure tests
   test 'should generate correct blob key for uploaded file' do
     medium = nil

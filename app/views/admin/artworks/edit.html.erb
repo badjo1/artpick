@@ -46,12 +46,16 @@
       </div>
 
       <div class="form-group">
-        <%= f.label :file, "New image (leave blank to keep current)" %>
-        <%= f.file_field :file, accept: "image/*", class: "form-input" %>
+        <%= f.label :file, "New file (leave blank to keep current)" %>
+        <%= f.file_field :file, accept: "image/jpeg,image/png,image/gif,image/webp,video/mp4", class: "form-input" %>
         <% if @artwork.file.attached? %>
           <div class="current-image">
-            <p>Current image:</p>
-            <%= image_tag @artwork.file, style: "max-width: 300px; margin-top: 0.5rem;" %>
+            <p>Current file:</p>
+            <% if @artwork.video? %>
+              <%= video_tag url_for(@artwork.file), controls: true, preload: "metadata", style: "max-width: 300px; margin-top: 0.5rem;" %>
+            <% else %>
+              <%= image_tag @artwork.file, style: "max-width: 300px; margin-top: 0.5rem;" %>
+            <% end %>
           </div>
         <% end %>
       </div>

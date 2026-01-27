@@ -1,6 +1,10 @@
 <div class="artwork-card">
   <% if artwork.file.attached? %>
-    <%= image_tag artwork.file, class: "artwork-image", alt: artwork.title %>
+    <% if artwork.video? %>
+      <%= video_tag url_for(artwork.file), controls: true, preload: "metadata", class: "artwork-image" %>
+    <% else %>
+      <%= image_tag artwork.file, class: "artwork-image", alt: artwork.title %>
+    <% end %>
   <% else %>
     <div class="artwork-image" style="display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary);">
       No image

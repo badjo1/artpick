@@ -4,6 +4,10 @@
         data-winner-id="<%= artwork.id %>"
         data-loser-id="<%= opponent.id %>">
   <% if artwork.file.attached? %>
-    <%= image_tag artwork.file, class: "comparison-image", alt: artwork.title %>
+    <% if artwork.video? %>
+      <%= video_tag url_for(artwork.file), autoplay: true, loop: true, muted: true, playsinline: true, class: "comparison-image" %>
+    <% else %>
+      <%= image_tag artwork.file, class: "comparison-image", alt: artwork.title %>
+    <% end %>
   <% end %>
 </button>

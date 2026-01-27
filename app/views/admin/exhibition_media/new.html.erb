@@ -9,7 +9,7 @@
     <%= form_with url: bulk_create_admin_exhibition_exhibition_media_path(@exhibition), method: :post, local: true, multipart: true, data: { turbo: false } do |form| %>
       <div class="form-group">
         <%= label_tag :files, "Photos / Videos" %>
-        <%= file_field_tag 'files[]', multiple: true, accept: "image/*,video/*", required: true, class: "form-control", direct_upload: false %>
+        <%= file_field_tag 'files[]', multiple: true, accept: "image/jpeg,image/png,image/gif,image/webp,video/mp4", required: true, class: "form-control", direct_upload: false %>
         <small class="form-help">Select multiple photos or videos to upload at once</small>
       </div>
 

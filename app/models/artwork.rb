@@ -2,9 +2,6 @@ class Artwork < ApplicationRecord
   # Active Storage attachment for the artwork file
   has_one_attached :file, dependent: :purge_later
 
-  # Custom storage key generation for new uploads
-  after_create_commit :set_custom_blob_key_async
-
   # Associations
   belongs_to :exhibition, counter_cache: :artwork_count
   belongs_to :artist, optional: true
@@ -16,12 +13,15 @@ class Artwork < ApplicationRecord
   has_many :check_ins, as: :checkable, dependent: :destroy
   has_many :voting_session_artwork_scores, dependent: :destroy
 
+  ALLOWED_CONTENT_TYPES = %w[image/jpeg image/png image/gif image/webp video/mp4].freeze
+
   # Validations
   validates :title, presence: true
   validates :file, presence: true
   validates :exhibition, presence: true
   validates :elo_score, presence: true, numericality: true
   validates :vote_count, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validate :acceptable_file_type
 
   # Scopes (EXHIBITION-SCOPED!)
   scope :for_exhibition, ->(exhibition) { where(exhibition: exhibition) }
@@ -82,25 +82,48 @@ class Artwork < ApplicationRecord
     end
   end
 
+  def video?
+    file.attached? && file.content_type.start_with?("video")
+  end
+
   def win_rate
     return 0 if vote_count.zero?
     (won_comparisons.count.to_f / vote_count * 100).round(1)
   end
 
-  # Updates storage key to: {number}-{exhibition-slug}/artworks/{artwork-slug}.ext
-  # Example: 03-jvde-2025/artworks/portrait-of-woman.jpg
+  def self.generate_storage_key(exhibition, title, filename)
+    extension = File.extname(filename)
+    slug = title.parameterize
+    "#{exhibition.storage_prefix}/artworks/#{slug}#{extension}"
+  end
+
+  def self.create_blob_with_key(exhibition, title, uploaded_file)
+    key = generate_storage_key(exhibition, title, uploaded_file.original_filename)
+    ActiveStorage::Blob.create_and_upload!(
+      io: uploaded_file,
+      filename: uploaded_file.original_filename,
+      content_type: uploaded_file.content_type,
+      key: key
+    )
+  end
+
+  # For rake migration tasks only
   def update_blob_key!
     return false unless file.attached? && exhibition.present? && title.present?
 
     blob = file.blob
-    artwork_slug = title.parameterize
-    extension = File.extname(blob.filename.to_s)
-
-    new_key = "#{exhibition.storage_prefix}/artworks/#{artwork_slug}#{extension}"
+    new_key = self.class.generate_storage_key(exhibition, title, blob.filename.to_s)
 
     return true if blob.key == new_key
 
+    old_key = blob.key
+    service = blob.service
+
+    content = blob.download
+    io = content.respond_to?(:read) ? content : StringIO.new(content)
+    service.upload(new_key, io)
     blob.update_column(:key, new_key)
+    service.delete(old_key)
 
     true
   rescue => e
@@ -110,8 +133,12 @@ class Artwork < ApplicationRecord
 
   private
 
-  def set_custom_blob_key_async
-    update_blob_key! if file.attached?
+  def acceptable_file_type
+    return unless file.attached?
+
+    unless file.content_type.in?(ALLOWED_CONTENT_TYPES)
+      errors.add(:file, "must be a JPEG, PNG, GIF, WebP or MP4 file")
+    end
   end
 
   def set_defaults

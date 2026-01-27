@@ -15,7 +15,13 @@ class Admin::ArtworksController < ApplicationController
   end
 
   def create
+    uploaded_file = params[:artwork]&.delete(:file)
     @artwork = @exhibition.artworks.new(artwork_params)
+
+    if uploaded_file.present? && @artwork.title.present?
+      blob = Artwork.create_blob_with_key(@exhibition, @artwork.title, uploaded_file)
+      @artwork.file.attach(blob)
+    end
 
     if @artwork.save
       redirect_to admin_exhibition_artworks_path(@exhibition), notice: "Artwork created successfully"
@@ -51,11 +57,12 @@ class Admin::ArtworksController < ApplicationController
       # Generate title from filename
       title = File.basename(file.original_filename, ".*").gsub(/[_-]/, " ").titleize
 
+      blob = Artwork.create_blob_with_key(@exhibition, title, file)
       artwork = @exhibition.artworks.new(
         title: title,
         artist_id: artist_id
       )
-      artwork.file.attach(file)
+      artwork.file.attach(blob)
 
       if artwork.save
         success_count += 1
@@ -82,6 +89,14 @@ class Admin::ArtworksController < ApplicationController
   end
 
   def update
+    uploaded_file = params[:artwork]&.delete(:file)
+
+    if uploaded_file.present?
+      title = params[:artwork][:title].presence || @artwork.title
+      blob = Artwork.create_blob_with_key(@exhibition, title, uploaded_file)
+      @artwork.file.attach(blob)
+    end
+
     if @artwork.update(artwork_params)
       redirect_to admin_exhibition_artworks_path(@exhibition), notice: "Artwork updated successfully"
     else

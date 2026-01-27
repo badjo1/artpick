@@ -45,7 +45,7 @@ namespace :storage do
         service = artwork.file.blob.service
 
         # Download file content from old location
-        file_content = artwork.file.blob.download
+        content = artwork.file.blob.download
 
         # Create a new blob with the new key
         new_blob = ActiveStorage::Blob.create_before_direct_upload!(
@@ -60,7 +60,8 @@ namespace :storage do
         new_blob.update_column(:key, new_key)
 
         # Upload content to new location
-        service.upload(new_key, StringIO.new(file_content))
+        io = content.respond_to?(:read) ? content : StringIO.new(content)
+        service.upload(new_key, io)
 
         # Update the attachment to use the new blob
         artwork.file.attachment.update!(blob: new_blob)
@@ -142,7 +143,7 @@ namespace :storage do
         service = medium.file.blob.service
 
         # Download file content from old location
-        file_content = medium.file.blob.download
+        content = medium.file.blob.download
 
         # Create a new blob with the new key
         new_blob = ActiveStorage::Blob.create_before_direct_upload!(
@@ -157,7 +158,8 @@ namespace :storage do
         new_blob.update_column(:key, new_key)
 
         # Upload content to new location
-        service.upload(new_key, StringIO.new(file_content))
+        io = content.respond_to?(:read) ? content : StringIO.new(content)
+        service.upload(new_key, io)
 
         # Update the attachment to use the new blob
         medium.file.attachment.update!(blob: new_blob)

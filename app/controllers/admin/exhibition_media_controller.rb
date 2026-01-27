@@ -13,7 +13,13 @@ class Admin::ExhibitionMediaController < ApplicationController
   end
 
   def create
+    uploaded_file = params[:exhibition_medium]&.delete(:file)
     @exhibition_medium = @exhibition.exhibition_media.new(exhibition_medium_params)
+
+    if uploaded_file.present?
+      blob = ExhibitionMedium.create_blob_with_key(@exhibition, uploaded_file)
+      @exhibition_medium.file.attach(blob)
+    end
 
     if @exhibition_medium.save
       redirect_to admin_exhibition_exhibition_media_path(@exhibition), notice: "Media successfully uploaded"
@@ -48,11 +54,12 @@ class Admin::ExhibitionMediaController < ApplicationController
     uploaded_files.each do |file|
       next if file.blank? # Skip empty file inputs
 
+      blob = ExhibitionMedium.create_blob_with_key(@exhibition, file)
       medium = @exhibition.exhibition_media.new(
-        file: file,
         photographer: params[:photographer],
         position: @exhibition.exhibition_media.count + 1
       )
+      medium.file.attach(blob)
 
       if medium.save
         success_count += 1
@@ -77,6 +84,13 @@ class Admin::ExhibitionMediaController < ApplicationController
   end
 
   def update
+    uploaded_file = params[:exhibition_medium]&.delete(:file)
+
+    if uploaded_file.present?
+      blob = ExhibitionMedium.create_blob_with_key(@exhibition, uploaded_file)
+      @exhibition_medium.file.attach(blob)
+    end
+
     if @exhibition_medium.update(exhibition_medium_params)
       redirect_to admin_exhibition_exhibition_media_path(@exhibition), notice: "Media updated successfully"
     else

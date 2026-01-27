@@ -2,35 +2,61 @@ class ExhibitionMedium < ApplicationRecord
   belongs_to :exhibition
   has_one_attached :file, dependent: :purge_later
 
+  ALLOWED_CONTENT_TYPES = %w[image/jpeg image/png image/gif image/webp video/mp4].freeze
+
   validates :file, presence: true
   validates :position, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
-
-  after_create_commit :set_custom_blob_key_async
+  validate :acceptable_file_type
 
   scope :positioned, -> { where.not(position: nil).order(:position) }
 
+  def self.generate_storage_key(exhibition, filename)
+    extension = File.extname(filename)
+    base = File.basename(filename, extension)
+    timestamp = Time.current.to_i
+    random = SecureRandom.hex(4)
+    "#{exhibition.storage_prefix}/media/#{base}-#{timestamp}-#{random}#{extension}"
+  end
+
+  def self.create_blob_with_key(exhibition, uploaded_file)
+    key = generate_storage_key(exhibition, uploaded_file.original_filename)
+    ActiveStorage::Blob.create_and_upload!(
+      io: uploaded_file,
+      filename: uploaded_file.original_filename,
+      content_type: uploaded_file.content_type,
+      key: key
+    )
+  end
+
+  # For rake migration tasks only
   def update_blob_key!
     return false unless file.attached?
     return false unless exhibition.present?
 
-    extension = File.extname(file.blob.filename.to_s)
-    filename = file.blob.filename.base
+    blob = file.blob
+    return true if blob.key.start_with?("#{exhibition.storage_prefix}/media/")
 
-    # Make key unique by including timestamp and random string
-    timestamp = Time.current.to_i
-    random = SecureRandom.hex(4)
-    new_key = "#{exhibition.storage_prefix}/media/#{filename}-#{timestamp}-#{random}#{extension}"
+    new_key = self.class.generate_storage_key(exhibition, blob.filename.to_s)
 
-    # Skip if already has correct structure
-    return true if file.blob.key.start_with?("#{exhibition.storage_prefix}/media/")
+    old_key = blob.key
+    service = blob.service
 
-    file.blob.update_column(:key, new_key)
+    content = blob.download
+    io = content.respond_to?(:read) ? content : StringIO.new(content)
+    service.upload(new_key, io)
+    blob.update_column(:key, new_key)
+    service.delete(old_key)
+
     true
   end
 
   private
 
-  def set_custom_blob_key_async
-    update_blob_key! if file.attached?
+  def acceptable_file_type
+    return unless file.attached?
+
+    unless file.content_type.in?(ALLOWED_CONTENT_TYPES)
+      errors.add(:file, "must be a JPEG, PNG, GIF, WebP or MP4 file")
+    end
   end
 end

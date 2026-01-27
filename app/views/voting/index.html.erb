@@ -44,7 +44,11 @@
             <%= hidden_field_tag :loser_id, @pair[1].id %>
             <div class="image-wrapper">
               <% if @pair[0].file.attached? %>
-                <%= image_tag @pair[0].file, alt: @pair[0].title, class: "voting-image" %>
+                <% if @pair[0].video? %>
+                  <%= video_tag url_for(@pair[0].file), autoplay: true, loop: true, muted: true, playsinline: true, class: "voting-image" %>
+                <% else %>
+                  <%= image_tag @pair[0].file, alt: @pair[0].title, class: "voting-image" %>
+                <% end %>
               <% else %>
                 <div class="image-placeholder">
                   <%= @pair[0].title %>
@@ -59,7 +63,11 @@
             <%= hidden_field_tag :loser_id, @pair[0].id %>
             <div class="image-wrapper">
               <% if @pair[1].file.attached? %>
-                <%= image_tag @pair[1].file, alt: @pair[1].title, class: "voting-image" %>
+                <% if @pair[1].video? %>
+                  <%= video_tag url_for(@pair[1].file), autoplay: true, loop: true, muted: true, playsinline: true, class: "voting-image" %>
+                <% else %>
+                  <%= image_tag @pair[1].file, alt: @pair[1].title, class: "voting-image" %>
+                <% end %>
               <% else %>
                 <div class="image-placeholder">
                   <%= @pair[1].title %>
