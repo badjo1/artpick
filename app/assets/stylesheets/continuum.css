@@ -306,6 +306,89 @@ a:hover {
   margin-top: var(--spacing-xs);
 }
 
+/* Screen Carousel */
+.carousel-card {
+  position: relative;
+}
+
+.carousel-slides {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: #0a0a0a;
+  border-bottom: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.carousel-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.carousel-slide--active {
+  opacity: 1;
+}
+
+.carousel-slide .artwork-image {
+  border-bottom: none;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 2;
+}
+
+.carousel-card:hover .carousel-arrow {
+  opacity: 1;
+}
+
+.carousel-arrow--prev {
+  left: 4px;
+}
+
+.carousel-arrow--next {
+  right: 4px;
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: var(--spacing-xs);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--color-text-secondary);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease;
+}
+
+.carousel-dot--active {
+  background: var(--color-text);
+  border-color: var(--color-text);
+}
+
 /* Comparison Interface */
 .comparison-container {
   width: calc(100% + (2 * var(--spacing-lg)));

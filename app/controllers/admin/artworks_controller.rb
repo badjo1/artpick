@@ -12,6 +12,7 @@ class Admin::ArtworksController < ApplicationController
   def new
     @artwork = @exhibition.artworks.new
     @artists = Artist.ordered_by_name
+    @screens = @exhibition.screens.active.order(:name)
   end
 
   def create
@@ -27,6 +28,7 @@ class Admin::ArtworksController < ApplicationController
       redirect_to admin_exhibition_artworks_path(@exhibition), notice: "Artwork created successfully"
     else
       @artists = Artist.ordered_by_name
+      @screens = @exhibition.screens.active.order(:name)
       render :new, status: :unprocessable_entity
     end
   end
@@ -86,6 +88,7 @@ class Admin::ArtworksController < ApplicationController
 
   def edit
     @artists = Artist.ordered_by_name
+    @screens = @exhibition.screens.active.order(:name)
   end
 
   def update
@@ -101,6 +104,7 @@ class Admin::ArtworksController < ApplicationController
       redirect_to admin_exhibition_artworks_path(@exhibition), notice: "Artwork updated successfully"
     else
       @artists = Artist.ordered_by_name
+      @screens = @exhibition.screens.active.order(:name)
       render :edit, status: :unprocessable_entity
     end
   end
@@ -127,7 +131,7 @@ class Admin::ArtworksController < ApplicationController
   end
 
   def artwork_params
-    params.require(:artwork).permit(:title, :description, :artist_id, :year, :medium, :file)
+    params.require(:artwork).permit(:title, :description, :artist_id, :screen_id, :year, :medium, :file)
   end
 
   def require_admin

@@ -46,6 +46,14 @@
       </div>
 
       <div class="form-group">
+        <%= f.label :screen_id, "Screen (optional grouping)" %>
+        <%= f.select :screen_id,
+            options_from_collection_for_select(@screens, :id, :name, @artwork.screen_id),
+            { include_blank: "No screen (show individually)" },
+            class: "form-input" %>
+      </div>
+
+      <div class="form-group">
         <%= f.label :file, "New file (leave blank to keep current)" %>
         <%= f.file_field :file, accept: "image/jpeg,image/png,image/gif,image/webp,video/mp4", class: "form-input" %>
         <% if @artwork.file.attached? %>

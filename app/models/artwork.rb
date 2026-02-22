@@ -5,6 +5,7 @@ class Artwork < ApplicationRecord
   # Associations
   belongs_to :exhibition, counter_cache: :artwork_count
   belongs_to :artist, optional: true
+  belongs_to :screen, optional: true
   has_one :space, through: :exhibition
 
   has_many :won_comparisons, class_name: "Comparison", foreign_key: "winning_artwork_id", dependent: :destroy

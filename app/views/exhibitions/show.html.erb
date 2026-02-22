@@ -50,15 +50,18 @@
     </div>
   </header>
 
-  <% if @top_artworks.any? %>
+  <% if @top_screen_groups.any? || @top_ungrouped.any? %>
     <section class="section-spacing">
       <h2>🏆 Publiekskeuze</h2>
       <p class="text-secondary mb-lg">
         Top 10 artworks based on global voting
       </p>
       <div class="artwork-grid">
-        <% @top_artworks.each_with_index do |artwork, index| %>
-          <%= render partial: "artworks/card", locals: { artwork: artwork, rank: index + 1 } %>
+        <% @top_screen_groups.each do |screen, artworks| %>
+          <%= render partial: "artworks/screen_carousel", locals: { screen: screen, artworks: artworks } %>
+        <% end %>
+        <% @top_ungrouped.each_with_index do |artwork, index| %>
+          <%= render partial: "artworks/card", locals: { artwork: artwork, rank: @top_screen_groups.size + index + 1 } %>
         <% end %>
       </div>
       <div class="action-spacing">

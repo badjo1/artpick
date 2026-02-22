@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_05_131935) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_22_104452) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,6 +62,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_131935) do
     t.integer "favorite_count", default: 0, null: false
     t.string "medium"
     t.integer "position"
+    t.bigint "screen_id"
     t.string "title"
     t.datetime "updated_at", null: false
     t.integer "vote_count", default: 0, null: false
@@ -70,6 +71,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_131935) do
     t.index ["elo_score"], name: "index_artworks_on_elo_score"
     t.index ["exhibition_id"], name: "index_artworks_on_exhibition_id"
     t.index ["position"], name: "index_artworks_on_position"
+    t.index ["screen_id"], name: "index_artworks_on_screen_id"
   end
 
   create_table "check_ins", force: :cascade do |t|
@@ -253,6 +255,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_131935) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "artworks", "artists"
   add_foreign_key "artworks", "exhibitions"
+  add_foreign_key "artworks", "screens"
   add_foreign_key "check_ins", "exhibitions"
   add_foreign_key "check_ins", "screens"
   add_foreign_key "check_ins", "users"

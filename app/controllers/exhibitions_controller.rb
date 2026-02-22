@@ -11,7 +11,10 @@ class ExhibitionsController < ApplicationController
   end
 
   def show
-    @top_artworks = @exhibition.top_artworks(10)
+    top_artworks = @exhibition.top_artworks(10).includes(:artist, :screen)
+    grouped = group_artworks_by_screen(top_artworks)
+    @top_screen_groups = grouped[:screen_groups]
+    @top_ungrouped = grouped[:ungrouped]
     @artworks_count = @exhibition.artworks.count
     @comparisons_count = @exhibition.comparisons.count
 
@@ -35,7 +38,10 @@ class ExhibitionsController < ApplicationController
   end
 
   def artworks
-    @artworks = @exhibition.artworks.includes(:artist).ranked(@exhibition)
+    all_artworks = @exhibition.artworks.includes(:artist, :screen).ranked(@exhibition)
+    grouped = group_artworks_by_screen(all_artworks)
+    @screen_groups = grouped[:screen_groups]
+    @ungrouped_artworks = grouped[:ungrouped]
   end
 
   def media
@@ -171,6 +177,22 @@ class ExhibitionsController < ApplicationController
                 metadata: { preferences_count: preference_params[:artwork_ids]&.compact&.size || 0 })
 
     redirect_to exhibition_path(@exhibition), notice: "Thank you for voting!"
+  end
+
+  def group_artworks_by_screen(artworks)
+    screen_groups = {}
+    ungrouped = []
+
+    artworks.each do |artwork|
+      if artwork.screen_id.present?
+        screen_groups[artwork.screen] ||= []
+        screen_groups[artwork.screen] << artwork
+      else
+        ungrouped << artwork
+      end
+    end
+
+    { screen_groups: screen_groups, ungrouped: ungrouped }
   end
 
   def comparison_params

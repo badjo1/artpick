@@ -1,0 +1,50 @@
+<div class="artwork-card carousel-card"
+     data-controller="carousel"
+     data-carousel-interval-value="4000"
+     data-action="mouseenter->carousel#pause mouseleave->carousel#resume">
+
+  <div class="carousel-slides">
+    <% artworks.each_with_index do |artwork, i| %>
+      <div class="carousel-slide" data-carousel-target="slide">
+        <% if artwork.file.attached? %>
+          <% if artwork.video? %>
+            <%= video_tag url_for(artwork.file), controls: true, preload: "metadata", class: "artwork-image" %>
+          <% else %>
+            <%= image_tag artwork.file, class: "artwork-image", alt: artwork.title %>
+          <% end %>
+        <% else %>
+          <div class="artwork-image" style="display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary);">
+            No image
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <button class="carousel-arrow carousel-arrow--prev" data-action="carousel#previous" aria-label="Previous">&lsaquo;</button>
+    <button class="carousel-arrow carousel-arrow--next" data-action="carousel#next" aria-label="Next">&rsaquo;</button>
+  </div>
+
+  <div class="carousel-dots">
+    <% artworks.each_with_index do |artwork, i| %>
+      <button class="carousel-dot"
+              data-carousel-target="dot"
+              data-action="carousel#goToSlide"
+              data-index="<%= i %>"
+              aria-label="Slide <%= i + 1 %>"></button>
+    <% end %>
+  </div>
+
+  <div class="artwork-info">
+    <h3><%= screen.name %></h3>
+
+    <% if artworks.first&.artist %>
+      <div class="artwork-artist"><%= artworks.first.artist.name %></div>
+    <% end %>
+
+    <div class="artwork-rank"><%= pluralize(artworks.size, "artwork") %></div>
+
+    <% if defined?(rank) && rank %>
+      <div class="artwork-rank" style="margin-top: 0;">#<%= rank %> • ELO <%= artworks.map(&:elo_score).max.round %></div>
+    <% end %>
+  </div>
+</div>

@@ -6,10 +6,16 @@
     </p>
   </header>
 
-  <% if @artworks.any? %>
+  <% if @screen_groups.any? || @ungrouped_artworks.any? %>
     <div class="artwork-grid">
-      <% @artworks.each_with_index do |artwork, index| %>
-        <%= render partial: "artworks/card", locals: { artwork: artwork, rank: index + 1 } %>
+      <% rank = 1 %>
+      <% @screen_groups.each do |screen, artworks| %>
+        <%= render partial: "artworks/screen_carousel", locals: { screen: screen, artworks: artworks, rank: rank } %>
+        <% rank += 1 %>
+      <% end %>
+      <% @ungrouped_artworks.each do |artwork| %>
+        <%= render partial: "artworks/card", locals: { artwork: artwork, rank: rank } %>
+        <% rank += 1 %>
       <% end %>
     </div>
   <% else %>
