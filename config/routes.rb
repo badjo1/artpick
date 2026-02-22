@@ -65,6 +65,14 @@ Rails.application.routes.draw do
 
     get "analytics", to: "analytics#index"
     get "analytics/exhibition/:id", to: "analytics#exhibition", as: :exhibition_analytics
+
+    resources :storage, only: [:index] do
+      collection do
+        post :upload
+        post :create_folder
+      end
+    end
+    delete "storage/*path", to: "storage#destroy", as: :storage_delete
   end
 
   # Health check

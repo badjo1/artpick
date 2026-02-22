@@ -1,0 +1,368 @@
+<div class="continuum-container">
+  <div class="admin-header">
+    <h1>Storage Browser</h1>
+  </div>
+
+  <!-- Breadcrumb Navigation -->
+  <div class="storage-breadcrumbs">
+    <%= link_to "Root", admin_storage_index_path, class: "breadcrumb-link" %>
+    <% if @path.present? %>
+      <% segments = @path.split("/") %>
+      <% segments.each_with_index do |segment, i| %>
+        <span class="breadcrumb-sep">/</span>
+        <% partial_path = segments[0..i].join("/") %>
+        <% if i == segments.length - 1 %>
+          <span class="breadcrumb-current"><%= segment %></span>
+        <% else %>
+          <%= link_to segment, admin_storage_index_path(path: partial_path), class: "breadcrumb-link" %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Actions Bar -->
+  <div class="storage-actions">
+    <!-- Upload Form -->
+    <%= form_tag upload_admin_storage_index_path, multipart: true, class: "storage-upload-form" do %>
+      <%= hidden_field_tag :path, @path %>
+      <label class="btn btn-primary storage-upload-btn">
+        <span>Upload Files</span>
+        <%= file_field_tag "files[]", multiple: true, class: "storage-file-input", onchange: "this.form.submit()" %>
+      </label>
+    <% end %>
+
+    <!-- Create Folder Form -->
+    <%= form_tag create_folder_admin_storage_index_path, class: "storage-folder-form" do %>
+      <%= hidden_field_tag :path, @path %>
+      <%= text_field_tag :folder_name, nil, placeholder: "New folder name", class: "storage-folder-input" %>
+      <%= submit_tag "Create Folder", class: "btn btn-small" %>
+    <% end %>
+  </div>
+
+  <!-- File Listing -->
+  <% if @entries.any? %>
+    <table class="continuum-table storage-table-desktop">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Size</th>
+          <th>Modified</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @entries.each do |entry| %>
+          <% name = entry["ObjectName"] %>
+          <% next if name == ".folder" %>
+          <% is_dir = entry["IsDirectory"] %>
+          <% entry_path = @path.present? ? "#{@path}/#{name}" : name %>
+          <tr>
+            <td class="storage-icon-cell">
+              <% if is_dir %>
+                <span class="storage-icon storage-icon-folder">&#x1F4C1;</span>
+              <% elsif media_file?(name) %>
+                <span class="storage-icon storage-icon-media">&#x1F5BC;</span>
+              <% else %>
+                <span class="storage-icon storage-icon-file">&#x1F4C4;</span>
+              <% end %>
+            </td>
+            <td>
+              <% if is_dir %>
+                <%= link_to name, admin_storage_index_path(path: entry_path), class: "storage-name storage-name-folder" %>
+              <% else %>
+                <% cdn = @browser.cdn_url(entry_path) %>
+                <%= link_to name, cdn, target: "_blank", class: "storage-name" %>
+                <% if image_file?(name) %>
+                  <div class="storage-thumb">
+                    <img src="<%= cdn %>" alt="<%= name %>" loading="lazy">
+                  </div>
+                <% elsif video_file?(name) %>
+                  <div class="storage-thumb storage-thumb-video">
+                    <video src="<%= cdn %>" muted preload="metadata"></video>
+                  </div>
+                <% end %>
+              <% end %>
+            </td>
+            <td class="storage-size">
+              <% unless is_dir %>
+                <%= number_to_human_size(entry["Length"]) %>
+              <% else %>
+                &mdash;
+              <% end %>
+            </td>
+            <td class="storage-date">
+              <% if entry["LastChanged"] %>
+                <%= Time.parse(entry["LastChanged"]).strftime("%Y-%m-%d %H:%M") rescue entry["LastChanged"] %>
+              <% end %>
+            </td>
+            <td class="storage-actions-cell">
+              <% unless is_dir %>
+                <% cdn = @browser.cdn_url(entry_path) %>
+                <button class="btn btn-small" onclick="navigator.clipboard.writeText('<%= j cdn %>')" title="Copy CDN URL">Copy URL</button>
+                <%= link_to "Delete", admin_storage_delete_path(path: entry_path), method: :delete, data: { confirm: "Delete #{name}?" }, class: "btn btn-small btn-danger" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <!-- Mobile card view -->
+    <div class="storage-cards-mobile">
+      <% @entries.each do |entry| %>
+        <% name = entry["ObjectName"] %>
+        <% next if name == ".folder" %>
+        <% is_dir = entry["IsDirectory"] %>
+        <% entry_path = @path.present? ? "#{@path}/#{name}" : name %>
+        <div class="storage-card">
+          <div class="storage-card-header">
+            <% if is_dir %>
+              <span class="storage-icon storage-icon-folder">&#x1F4C1;</span>
+              <%= link_to name, admin_storage_index_path(path: entry_path), class: "storage-name storage-name-folder" %>
+            <% else %>
+              <span class="storage-icon storage-icon-file">&#x1F4C4;</span>
+              <% cdn = @browser.cdn_url(entry_path) %>
+              <%= link_to name, cdn, target: "_blank", class: "storage-name" %>
+            <% end %>
+          </div>
+          <% unless is_dir %>
+            <% cdn = @browser.cdn_url(entry_path) %>
+            <% if image_file?(name) %>
+              <div class="storage-thumb">
+                <img src="<%= cdn %>" alt="<%= name %>" loading="lazy">
+              </div>
+            <% end %>
+            <div class="storage-card-meta">
+              <span><%= number_to_human_size(entry["Length"]) %></span>
+              <span><%= Time.parse(entry["LastChanged"]).strftime("%Y-%m-%d") rescue "" %></span>
+            </div>
+            <div class="storage-card-actions">
+              <button class="btn btn-small" onclick="navigator.clipboard.writeText('<%= j cdn %>')" title="Copy CDN URL">Copy URL</button>
+              <%= link_to "Delete", admin_storage_delete_path(path: entry_path), method: :delete, data: { confirm: "Delete #{name}?" }, class: "btn btn-small btn-danger" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="storage-empty">
+      This folder is empty.
+    </p>
+  <% end %>
+</div>
+
+<style>
+  .storage-breadcrumbs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding: var(--spacing-sm) 0;
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .breadcrumb-link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+  }
+
+  .breadcrumb-link:hover {
+    color: var(--color-text);
+  }
+
+  .breadcrumb-sep {
+    color: var(--color-text-secondary);
+    opacity: 0.5;
+  }
+
+  .breadcrumb-current {
+    color: var(--color-text);
+  }
+
+  .storage-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+  }
+
+  .storage-upload-form {
+    display: flex;
+    align-items: center;
+  }
+
+  .storage-file-input {
+    display: none;
+  }
+
+  .storage-upload-btn {
+    cursor: pointer;
+  }
+
+  .storage-folder-form {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+
+  .storage-folder-input {
+    padding: 0.5rem 0.75rem;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+    font-family: inherit;
+    letter-spacing: 0.05em;
+    width: 200px;
+  }
+
+  .storage-folder-input::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.6;
+  }
+
+  .storage-folder-input:focus {
+    outline: none;
+    border-color: var(--color-text);
+  }
+
+  /* Table */
+  .storage-table-desktop {
+    display: table;
+  }
+
+  .storage-cards-mobile {
+    display: none;
+  }
+
+  .storage-icon-cell {
+    width: 30px;
+    text-align: center;
+  }
+
+  .storage-icon {
+    font-size: 1.2rem;
+  }
+
+  .storage-name {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .storage-name:hover {
+    text-decoration: underline;
+  }
+
+  .storage-name-folder {
+    font-weight: 500;
+  }
+
+  .storage-size,
+  .storage-date {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+  }
+
+  .storage-actions-cell {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .storage-actions-cell .btn {
+    margin-left: 0.25rem;
+  }
+
+  .storage-thumb {
+    margin-top: 0.5rem;
+    max-width: 120px;
+    max-height: 80px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+  }
+
+  .storage-thumb img,
+  .storage-thumb video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .storage-empty {
+    text-align: center;
+    color: var(--color-text-secondary);
+    padding: 4rem;
+  }
+
+  .btn-danger {
+    border-color: #c0392b;
+    color: #e74c3c;
+  }
+
+  .btn-danger:hover {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+  }
+
+  /* Mobile card view */
+  @media (max-width: 768px) {
+    .storage-table-desktop {
+      display: none;
+    }
+
+    .storage-cards-mobile {
+      display: block;
+    }
+
+    .storage-card {
+      border: 1px solid var(--color-border);
+      padding: var(--spacing-md);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .storage-card-header {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .storage-card-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .storage-card-actions {
+      display: flex;
+      gap: var(--spacing-sm);
+    }
+
+    .storage-card-actions .btn {
+      flex: 1;
+      text-align: center;
+    }
+
+    .storage-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .storage-folder-input {
+      width: 100%;
+      flex: 1;
+    }
+
+    .admin-header h1 {
+      font-size: 1.5rem;
+    }
+  }
+</style>

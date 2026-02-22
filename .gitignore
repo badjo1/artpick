@@ -7,8 +7,6 @@
 # Ignore bundler config.
 /.bundle
 
-# Ignore all environment files.
-/.env*
 
 # Ignore all logfiles and tempfiles.
 /log/*
@@ -34,4 +32,7 @@
 /config/*.key
 
 **/.DS_Store
+
+# Local-only rake tasks (contain credentials)
+/lib/tasks/db_pull.rake
 
