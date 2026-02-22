@@ -35,7 +35,7 @@ class Exhibition < ApplicationRecord
   end
 
   def voting_open?
-    active? && (end_date.nil? || end_date >= Date.today)
+    voting_enabled? && active? && (end_date.nil? || end_date >= Date.today)
   end
 
   def top_artworks(limit = 10)

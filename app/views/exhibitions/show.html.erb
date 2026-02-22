@@ -21,10 +21,12 @@
         <div class="stat-label">Artworks</div>
         <div class="stat-value"><%= @artworks_count %></div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">Comparisons</div>
-        <div class="stat-value"><%= @comparisons_count %></div>
-      </div>
+      <% if @exhibition.voting_enabled? %>
+        <div class="stat-card">
+          <div class="stat-label">Comparisons</div>
+          <div class="stat-value"><%= @comparisons_count %></div>
+        </div>
+      <% end %>
       <div class="stat-card">
         <div class="stat-label">Status</div>
         <div class="stat-value status-text-size">
@@ -41,7 +43,7 @@
       <% if @exhibition.voting_open? %>
         <%= link_to "Start Voting →", comparison_exhibition_path(@exhibition), class: "btn" %>
       <% end %>
-      <% if @session_comparisons_count.to_i >= @exhibition.minimum_comparisons %>
+      <% if @exhibition.voting_enabled? && @session_comparisons_count.to_i >= @exhibition.minimum_comparisons %>
         <%= link_to "Select Your Top 5 →", preferences_exhibition_path(@exhibition), class: "btn" %>
       <% end %>
       <% if @exhibition.luma_url.present? %>
@@ -50,7 +52,7 @@
     </div>
   </header>
 
-  <% if @top_screen_groups.any? || @top_ungrouped.any? %>
+  <% if @exhibition.voting_enabled? && (@top_screen_groups.any? || @top_ungrouped.any?) %>
     <section class="section-spacing">
       <h2>🏆 Publiekskeuze</h2>
       <p class="text-secondary mb-lg">
@@ -70,7 +72,7 @@
     </section>
   <% end %>
 
-  <% if @personal_top_artworks.present? && @has_voted %>
+  <% if @exhibition.voting_enabled? && @personal_top_artworks.present? && @has_voted %>
     <section class="section-divider">
       <h2>⭐ Jouw keuze</h2>
       <p class="text-secondary mb-lg">
