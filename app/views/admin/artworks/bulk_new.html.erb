@@ -17,6 +17,14 @@
             class: "form-input" %>
       </div>
 
+      <div class="form-group">
+        <%= f.label :screen_id, "Screen (optional - applies to all uploads)" %>
+        <%= f.select :screen_id,
+            options_from_collection_for_select(@screens, :id, :name),
+            { include_blank: "No screen (show individually)" },
+            class: "form-input" %>
+      </div>
+
       <div class="file-drop-zone" id="dropZone">
         <p style="margin: 0; font-size: 1.125rem; font-weight: 500;">
           📸 Drag images here

@@ -35,6 +35,7 @@ class Admin::ArtworksController < ApplicationController
 
   def bulk_new
     @artists = Artist.ordered_by_name
+    @screens = @exhibition.space.screens.active.order(:name)
   end
 
   def bulk_create
@@ -50,8 +51,9 @@ class Admin::ArtworksController < ApplicationController
     success_count = 0
     errors = []
 
-    # Get artist_id if provided
+    # Get artist_id and screen_id if provided
     artist_id = params[:artist_id].presence
+    screen_id = params[:screen_id].presence
 
     uploaded_files.each do |file|
       next if file.blank? || !file.respond_to?(:original_filename)
@@ -62,7 +64,8 @@ class Admin::ArtworksController < ApplicationController
       blob = Artwork.create_blob_with_key(@exhibition, title, file)
       artwork = @exhibition.artworks.new(
         title: title,
-        artist_id: artist_id
+        artist_id: artist_id,
+        screen_id: screen_id
       )
       artwork.file.attach(blob)
 
