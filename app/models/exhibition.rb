@@ -1,4 +1,7 @@
 class Exhibition < ApplicationRecord
+  # Active Storage
+  has_one_attached :cover_image
+
   # Associations
   belongs_to :space
   has_many :artworks, dependent: :restrict_with_error

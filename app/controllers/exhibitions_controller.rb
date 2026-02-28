@@ -4,7 +4,7 @@ class ExhibitionsController < ApplicationController
   before_action :ensure_voting_session, only: [:comparison, :compare, :preferences]
 
   def index
-    @exhibitions = Exhibition.includes(:space).order(start_date: :desc)
+    @exhibitions = Exhibition.includes(:space, artworks: :artist).order(start_date: :desc)
     @active_exhibitions = @exhibitions.active
     @upcoming_exhibitions = @exhibitions.upcoming
     @archived_exhibitions = @exhibitions.archived

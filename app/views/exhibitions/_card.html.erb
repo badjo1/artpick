@@ -1,23 +1,28 @@
 <div class="exhibition-card" onclick="window.location='<%= exhibition_path(exhibition) %>'">
-  <h3><%= exhibition.title %></h3>
-
-  <div class="exhibition-meta">
-    <span><%= exhibition.space.name %></span>
-    <% if exhibition.start_date %>
-      • <span><%= exhibition.start_date.strftime("%b %Y") %></span>
-    <% end %>
-  </div>
-
-  <% if exhibition.description.present? %>
-    <p><%= truncate(exhibition.description, length: 150) %></p>
+  <% if exhibition.cover_image.attached? %>
+    <div class="exhibition-cover">
+      <%= image_tag exhibition.cover_image, alt: exhibition.title %>
+    </div>
   <% end %>
 
-  <div class="exhibition-meta">
-    <%= pluralize(exhibition.artworks.count, "artwork") %>
-    • <%= pluralize(exhibition.comparisons.count, "comparison") %>
-  </div>
+  <div class="exhibition-card-body">
+    <h3><%= exhibition.title %></h3>
 
-  <div class="exhibition-status <%= exhibition.status %>">
-    <%= exhibition.status.upcase %>
+    <div class="exhibition-meta">
+      <span><%= exhibition.space.name %></span>
+      <% if exhibition.start_date %>
+        • <span><%= exhibition.start_date.strftime("%b %Y") %></span>
+      <% end %>
+    </div>
+
+    <% if exhibition.description.present? %>
+      <p><%= truncate(exhibition.description, length: 150) %></p>
+    <% end %>
+
+    <div class="exhibition-meta">
+      <% artist_count = exhibition.artworks.map(&:artist_id).compact.uniq.size %>
+      <%= pluralize(exhibition.artworks.size, "artwork") %>
+      • <%= pluralize(artist_count, "artist") %>
+    </div>
   </div>
 </div>
