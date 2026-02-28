@@ -9,7 +9,7 @@ class HomeController < ApplicationController
 
     # Stats for The Continuum
     @total_artworks = Artwork.count
-    @total_comparisons = Comparison.count
+    @total_artists = Artist.joins(:artworks).distinct.count
     @total_exhibitions = Exhibition.count
   end
 end
